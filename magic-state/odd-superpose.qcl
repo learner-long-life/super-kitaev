@@ -1,0 +1,14 @@
+// Create a superposition of magic states for odd k
+// \nu on p. 133 [Kitaev,Shen,Vyalyi 2002]
+
+// qdata - the register to hold the superposition of odd magic states
+//         assume this starts out in all zeroes
+operator CreateOddMagicSuperposition(qureg qdata) {
+  int n = #qdata;
+  Mix(qdata[n-1]); // apply Hadamard to mix most significant bit
+  Z(qdata[n-1]);   // apply Z to flip sign on |1>
+}
+
+qureg A[2];
+CreateOddMagicSuperposition(A);
+dump;

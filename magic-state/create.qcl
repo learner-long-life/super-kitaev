@@ -1,0 +1,32 @@
+// These magic states are the \ket{ \psi_{n,k} } 's in
+// [Kitaev,Shen,Vyalyi] p. 133, for the super-kitaev compiling algorithm
+// qdata is an array of ancillary qubits where we are creating the  magic state
+// k     is an n-bit integer which is the index
+
+operator CreateMagicState(qureg qdata, int k) {
+  int n = #qdata;
+  int i; // index for looping over qubits
+  int pow; // power of 2 for scaling phase denominator
+  
+  // First apply Hadamards so that we have a |1> component to control off of
+  Mix(qdata);
+  // Iterate over each index bit of computational basis states
+  for i=0 to n-1 {
+    pow = n-i; // this will always be positive
+    //print "j_",i," ",ji;
+    //print "i2 ",2^i;
+    V(2*pi*k/(2^pow), qdata[i]);
+    print "qdata=",qdata;
+  }
+
+}
+
+qureg A[2];
+int i;
+
+for i = 0 to 3 {
+  CreateMagicState(A, i);
+  print "\psi_{",2,",",i,"}";
+  dump;
+  reset;
+}
