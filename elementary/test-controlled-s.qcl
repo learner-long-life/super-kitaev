@@ -1,0 +1,40 @@
+// Test the controlled-S operator
+
+qureg A[2];
+
+// Apply Hadamard to least significant qubit
+Mix(A);
+dump;
+// Expected output:
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+
+// Create the explicit controlled-S matrix and apply to
+// control qubit 0, target qubit 1
+Matrix4x4((1,0),(0,0),(0,0),(0,0),
+          (0,0),(1,0),(0,0),(0,0),
+          (0,0),(0,0),(1,0),(0,0),
+          (0,0),(0,0),(0,0),(0,1), A[1] & A[0]);
+
+dump;
+// The output should be the following:
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5i |3>
+
+// Now reset, and reverse the target and control
+reset;
+Mix(A);
+
+// Prove that we start from scratch
+dump;
+// Expected output:
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+
+Matrix4x4((1,0),(0,0),(0,0),(0,0),
+          (0,0),(1,0),(0,0),(0,0),
+          (0,0),(0,0),(1,0),(0,0),
+          (0,0),(0,0),(0,0),(0,1), A[1] & A[0]);
+
+dump;
+// The output should still be the same as above:
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5i |3>
+// Thus proving that controlled-phase-rotations are symmetric wrt target & control
+

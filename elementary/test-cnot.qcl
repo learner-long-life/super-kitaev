@@ -1,0 +1,40 @@
+// Create the explicit controlled-S operator
+
+qureg A[2];
+
+// Apply Hadamard to least significant qubit
+Mix(A[0]);
+dump;
+// Expected output:
+// 0.70711 |0> + 0.70711 |1>
+
+// First, make sure that we understand what is going on with Controlled-Not
+// That is, which is the first (control) qubit and which is the second (target)
+Matrix4x4((1,0),(0,0),(0,0),(0,0),
+          (0,0),(1,0),(0,0),(0,0),
+          (0,0),(0,0),(0,0),(1,0),
+          (0,0),(0,0),(1,0),(0,0), A[1] & A[0]);
+
+// Interesting, so the first qubit in the tensor product appears last in the register
+dump;
+// Expected output:
+// 0.70711 |0> + 0.70711 |3>
+
+// Now reset and make sure we know that QCL's default byte ordering is LSB first
+reset;
+Mix(A[1]);
+dump;
+// Expected output:
+// 0.70711 |0> + 0.70711 |2>
+
+Matrix4x4((1,0),(0,0),(0,0),(0,0),
+          (0,0),(1,0),(0,0),(0,0),
+          (0,0),(0,0),(0,0),(1,0),
+          (0,0),(0,0),(1,0),(0,0), A);
+
+dump;
+// So now we should expect the same as before, if A[0] is implicitly before A[1]
+// Because QCL takes the control from the last qubit in the register
+// Expected output:
+// 0.70711 |0> + 0.70711 |3>
+
