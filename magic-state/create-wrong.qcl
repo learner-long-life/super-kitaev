@@ -1,3 +1,7 @@
+// This is the old, incorrect version with the wrong phase sign.
+// I am keeping it because I am a packrat even for data.
+// See create.qcl for the correct version.
+
 // These magic states are the \ket{ \psi_{n,k} } 's in
 // [Kitaev,Shen,Vyalyi] p. 133, for the super-kitaev compiling algorithm
 // qdata is an array of ancillary qubits where we are creating the  magic state
@@ -15,9 +19,23 @@ operator CreateMagicState(qureg qdata, int k) {
     pow = n-i; // this will always be positive
     //print "j_",i," ",ji;
     //print "i2 ",2^i;
-    V(-2*pi*k/(2^pow), qdata[i]);
-    print "qdata=",qdata;
+    V(2*pi*k/(2^pow), qdata[i]);
   }
 
 }
 
+qureg A[2];
+int i;
+
+for i = 0 to 3 {
+  CreateMagicState(A, i);
+  print "\psi_{",2,",",i,"}";
+  dump;
+  reset;
+}
+
+// This is the (incorrect) output of the above code:
+// \psi_{2,0} = 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+// \psi_{2,1} = 0.5 |0> + 0.5i |1> - 0.5 |2> - 0.5i |3>
+// \psi_{2,2} = 0.5 |0> - 0.5 |1> + 0.5 |2> - 0.5 |3>
+// \psi_{2,3} = 0.5 |0> - 0.5i |1> - 0.5 |2> + 0.5i |3>
