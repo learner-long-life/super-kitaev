@@ -16,7 +16,7 @@ operator CreateMagicState(qureg qdata, int k) {
     //print "j_",i," ",ji;
     //print "i2 ",2^i;
     V(-2*pi*k/(2^pow), qdata[i]);
-    print "qdata=",qdata;
+    //print "qdata=",qdata;
   }
 
 }
