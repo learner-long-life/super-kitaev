@@ -1,0 +1,56 @@
+// Tests whether QFT transforms a magic state into computational basis
+
+include "create.qcl";
+include "dft.qcl";
+
+qureg A[2];
+int i;
+
+// \psi_{2,0}
+
+CreateMagicState(A, 0);
+dump;
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+
+dft(A);
+dump;
+// |0>
+
+!dft(A);
+dump;
+// 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+
+// \psi_{2,1}
+reset;
+CreateMagicState(A, 1);
+dump;
+// 0.5 |0> - 0.5i |1> - 0.5 |2> + 0.5i |3>
+
+dft(A);
+dump;
+// |1>
+
+!dft(A);
+dump;
+// 0.5 |0> - 0.5i |1> - 0.5 |2> + 0.5i |3>
+
+// \psi_{2,2}
+reset;
+CreateMagicState(A, 2);
+dump;
+// 0.5 |0> - 0.5 |1> + 0.5 |2> - 0.5 |3>
+
+dft(A);
+dump;
+// |2>
+
+// \psi_{2,3}
+reset;
+CreateMagicState(A, 3);
+dump;
+// 0.5 |0> + 0.5i |1> - 0.5 |2> - 0.5i |3>
+
+dft(A);
+dump;
+// |3>
+

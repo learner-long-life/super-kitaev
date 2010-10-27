@@ -1,0 +1,18 @@
+include "create.qcl";
+
+qureg A[2];
+int i;
+
+for i = 0 to 3 {
+  CreateMagicState(A, i);
+  print "\psi_{",2,",",i,"}";
+  dump;
+  reset;
+}
+
+// Expected output:
+// \psi_{2,0} = 0.5 |0> + 0.5 |1> + 0.5 |2> + 0.5 |3>
+// \psi_{2,1} = 0.5 |0> - 0.5i |1> - 0.5 |2> + 0.5i |3>
+// \psi_{2,2} = 0.5 |0> - 0.5 |1> + 0.5 |2> - 0.5 |3>
+// \psi_{2,3} = 0.5 |0> + 0.5i |1> - 0.5 |2> - 0.5i |3>
+
