@@ -1,0 +1,444 @@
+\documentclass{toc}
+
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{eprint}
+\usepackage{rotating}
+\usepackage{eepic}
+
+%\tocdetails{%
+%   volume=0, number=5, year=2005, firstpage=78,
+%   received={October 15, 2004}, 
+%   published={December 31, 2004}
+%}
+
+\theoremstyle{plain}
+\newtheorem{idea}[theorem]{Idea}
+%\newtheorem{idea}{Idea}[section]
+
+\theoremstyle{definition}
+\newtheorem{thought}[theorem]{Thought}
+%\newtheorem{thought}{Thought}[section]
+
+\DeclareMathOperator{\cov}{\textsf{Cov}}
+
+\title{Qualifying Exam Report\\ October 2010}
+\author{Paul T. Pham}
+
+\runningauthor{\begin{minipage}{.9\textwidth}\centering P. Pham,
+    \end{minipage}}
+\runningtitle{Typesetting guidelines}
+%\copyrightauthor{Alex Rusell and the extremely unnecessaily 
+%large ficticious family of authors}
+
+\input{Qcircuit}
+
+\begin{document}
+
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+
+\begin{center}
+\LARGE{Quantum Compiling with the Super-Kitaev Algorithm}\\
+\Large{UW CSE Quals Project Report, November 2010}\\
+\Large{Paul Pham (ppham@cs.washington.edu)}
+\end{center}
+
+\section{Abstract}
+
+Quantum compiling is the translation of a high-level description of a quantum
+algorithm into a sequence of low-level, universal instructions that can be
+efficiently run on actual hardware. One of the central results of quantum
+computing is the Solovay-Kitaev theorem, which tells us that such quantum
+compiling can be efficiently done in theory. However, in practice, the
+multiplicative constants of Solovay-Kitaev may still make it impractical.
+One promising solution is the lesser-known Super-Kitaev algorithm, which
+can reduce the compile time of a quantum algorithm in exchange for using
+more space and running time during execution. I describe my implementation
+of both the Solovay-Kitaev and Super-Kitaev algorithms, compare their
+resource usage in several simple examples, and discuss future optimizations.
+
+\section{Introduction}
+
+%% As transistor sizes approach atomic scales, not only are they
+%% affected by the properties of quantum physics, they can actually exploit
+%% these properties to perform useful computation. This new field, called
+%% \textit{quantum computing}, offers us many algorithms which are faster
+%% than anything known for current computers running on digital logic
+%% (which we describe as \textit{classical}). The results that
+%% concern us in this project relate to data search based on
+%% Grover's algorithm \cite{grover98} which gives us a quadratic
+%% speedup over classical search.
+
+Quantum computing is an emerging field which harnesses the latent
+computational power of quantum mechanics to solve useful problems.
+Since its proposal by Richard Feynman in 1982, through the discovery
+of Shor's algorithm in 1994, quantum computing has seen rapid theoretical growth
+with subsequent discoveries of efficient algorithms for graph exploration,
+solving systems of linear equations, etc.
+This has been matched by equal growth on the experimental side, with physical
+realizations first with nucl
+
+The rest of this report is organized as follows.
+Section \ref{sec:grover} gives a high-level overview of Grover's
+search algorithm.
+%Section \ref{sec:related} discusses previously proposed data models and
+%addresses their shortcomings as well as answering their objections.
+Section \ref{sec:model}
+defines our data model for a hybrid quantum-classical
+relational database using the novel concept of a quantum RAM.
+%We also discuss several alternative models which do \textit{not} work.
+Section \ref{sec:sim} presents
+some basic classical simulation results of our quantum database.
+Section \ref{sec:algs} provides two
+efficient quantum algorithms relative to our model that outperform
+anything known in the classical world.
+Finally, Section \ref{sec:conclude} concludes the report with limitations
+of our approach and future research directions.
+
+\section{A Brief History of Quantum Compiling}
+\label{sec:history}
+
+\section{The Solovay-Kitaev Algorithm}
+\label{sec:solovay-kitaev}
+
+The discovery that arbitrary quantum gates could be efficiently approximated to any
+precision is one of the central results of the field.
+
+\section{The Super-Kitaev Algorithm}
+
+In \cite{
+
+\subsection{Precompiling to the Standard Set}
+\label{subsec:precompile}
+
+\subsection{Phase Estimation}
+\label{subsec:phase-estimate}
+
+\subsection{Phase Shift}
+\label{subsec:phase-shift}
+
+%% \section{Related Work}
+%% \label{sec:related}
+
+%% The best known bounds for Grover's algorithm on a variety of search
+%% problems are given in the project proposal \cite{pham06}.
+%% It is worth mentioning two new papers here to address their objections
+%% against quantum databases. Both Zalka \cite{zalka99} and
+%% Viamontes et al. \cite{vmh04} point out that even with generous
+%% assumptions about quantum hardware, current classical databases manage
+%% to scale well for realistic datasets, especially with parallel
+%% query execution. This is a valid objection, but we will discuss later
+%% possible future applications which will push our capabilities to
+%% their asymptotic limits, where quantum algorithms may enjoy some
+%% success.
+
+%% These authors make two less valid objections.
+%% Firstly, that we must take the complexity of the
+%% query function $f$ into account of our running time. This incorrectly
+%% assumes that we can run $f$ in constant time on a classical machine.
+%% Even when a quantum computer operates on a superposition of states in
+%% parallel, it is still only performing classical operations which will
+%% take comparable resources on \textit{any} machine.
+%% Therefore,
+%% considering query complexity only is a more fair model.
+%% Secondly, most explicit databases usually don't contain all $2^n$ possible 
+%% items in their address space. However, we can deal with
+%% arbitrary relations using a quantum RAM to build a true quantum database
+%% as described in the next section, although at the cost of making
+%% assumptions about future quantum hardware.
+
+\section{Model}
+\label{sec:model}
+
+Any practical model of quantum computation
+must involve a quantum-classical \textit{hybrid} as
+discussed in \cite{oemer00}. Such a
+computer is under deterministic control and has access to both classical
+features (hard drives, user interfaces, processors)
+as well as quantum resources (qubits and
+unitary operations).
+% which it can
+%use at appropriate times to increase its efficiency.
+
+%There are two possible data models under which we can run quantum
+%algorithms for relational databases.
+%Our model uses a classical
+%addressing scheme to locate our data.
+%In the first model, the data itself
+%can consist of arbitrary quantum states.
+%Applications include storing intermediate
+%states for quantum computation, entangled qubits for cryptographic
+%communication, or quantum software. None of these are possible
+%classically, so we concern ourselves only with the second model:
+%The data itself is also classical but can be encoded into quantum states
+%of the computational basis.
+
+In order to build a quantum relational database, we use a
+classical addressing/labeling scheme for our states and
+encode classical data in orthogonal quantum states of the
+computational basis.
+%qubits.
+Most importantly, it is necessary to
+store and access arbitrary data relations. RAMs do this classically by
+associated data words with addresses.
+%
+% with a rectangular grid of cells proportional to the number of
+%data words, which is exponential in the width of the address lines.
+Because classical algorithms define efficiency assuming constant-time
+access to RAMs, it also makes sense to measure quantum algorithms based
+on constant-time access to quantum RAM (QRAM).
+Formally, a QRAM can be described as
+$Q=\{a,d,\textsf{CRAM}:\{0,1\}^a\rightarrow\{0,1\}^d\}$,
+where  $a$ is the address width,
+$d$ is the data width, and \textsf{CRAM} is an internal classical
+RAM with $d2^a$ bits with additional quantum control.
+There are $a$ classical address lines
+(\textsf{CA}) and $d$ classical data lines (\textsf{CD})
+for reading and writing deterministically.
+% and we define
+%\textsf{CRAM}$\{0,1\}^a \rightarrow \{0,1\}^d$ as a lookup function for this
+%data.
+In addition, there is a quantum address register $\ket{\textsf{QA}}$
+and a quantum data readout register $\ket{\textsf{QD}}$ with respective
+widths of $a$ and $a$.
+
+An example of a QRAM is shown in Figure \ref{qram:fig}, with the data lines
+taken from the \textsf{CRAM}. Its typical operation follows:
+(1) Classical data is written
+using \textsf{CD} and \textsf{CA} (not shown). (2) $\ket{\textsf{QA}}$ is
+prepared in an equal superposition of all address basis states $\ket{\psi}_a$
+and $\ket{\textsf{QD}}$ is
+prepared in the zero state $\ket{0}^{\otimes d}$.
+(3) A superposition of the data in \textsf{CRAM} is read out in
+\textsf{QD}, on which some quantum algorithm can now perform parallel
+queries. We use the property of qubit correlation or
+\textit{entanglement} to associate a memory address $x$ with the data word
+stored in \textsf{CRAM}$(x)$.
+The final state of the combined system $\ket{\textsf{QA}}$ and
+$\ket{\textsf{QD}}$ becomes an equal superposition $\ket{\phi}$
+of addresses and associated data in the current
+database state.
+We denote the unitary lookup operator $L$ on QRAM $Q$ as
+$L\ket{\textsf{CD}}\ket{\psi}_a\ket{0}^{\otimes d} \rightarrow
+\ket{\textsf{CD}}\frac{1}{\sqrt{2^a}}\sum_{x \in \{0,1\}^a}\ket{x}\ket{\textsf{CRAM}(x)} = \ket{\phi}$.
+
+\begin{figure}
+\begin{center}
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+\lstick{\ket{\textsf{QA}_1}} & \ctrlo{1} & \ctrlo{1} & \ctrlo{1} & \ctrlo{1}
+                           & \ctrl{1}  & \ctrl{1}  & \ctrl{1}  & \ctrl{1}
+                           & \qw\\
+\lstick{\ket{\textsf{QA}_0}} & \ctrlo{1} & \ctrlo{2} & \ctrl{3}  & \ctrl{4}
+                           & \ctrlo{5} & \ctrlo{6} & \ctrl{7}  & \ctrl{8}
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{00}_1}}
+                           & \ctrl{8}  & \qw       & \qw       & \qw
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{00}_0}}
+                           & \qw       & \ctrl{8}  & \qw       & \qw
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{01}_1}}
+                           & \qw       & \qw       & \ctrl{6}  & \qw
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{01}_0}}
+                           & \qw       & \qw       & \qw       & \ctrl{6}
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{10}_1}}
+                           & \qw       & \qw       & \qw       & \qw
+                           & \ctrl{4}  & \qw       & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{10}_0}}
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw       & \ctrl{4}  & \qw       & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{11}_1}}
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw       & \qw       & \ctrl{2}  & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{CD}^{11}_0}}
+                           & \qw       & \qw       & \qw       & \qw
+                           & \qw       & \qw       & \qw       & \ctrl{2}
+                           & \qw\\
+\lstick{\ket{\textsf{QD}_1}}   & \targ     & \qw       & \targ     & \qw
+                           & \targ     & \qw       & \targ     & \qw
+                           & \qw\\
+\lstick{\ket{\textsf{QD}_0}}   & \qw       & \targ     & \qw       & \targ
+                           & \qw       & \targ     & \qw       & \targ
+                           & \qw
+}
+\end{displaymath}
+\caption{A quantum circuit diagram for a QRAM with 2-qubit address lines and
+         2-qubit data words.}
+\end{center}
+\label{qram:fig}
+\end{figure}
+%
+Traditionally, Grover's algorithm searches an \textit{implicit database}
+of all $2^n$ possible items,
+which can be generated in time $O(n)$ time by applying the Hadamard gate
+(discrete Fourier transform over $\mathbb{Z}_2$) to each qubit. However,
+we can now generalize the steps in Section \ref{sec:grover} for
+\textit{explicit databases} stored in QRAM:
+(1) Retrieve $\ket{\phi}$.
+(2) For $T$ iterations, query $f$ in parallel on the basis
+   states of the current state $\ket{\phi'}$ and perform the following two
+   substeps:
+(2a) Do the same step as before.
+(2b) Flip all states about the original database state $\ket{\phi}$.
+% using     the operator $(2\ket{\phi}\bra{\phi}-I)O_f$.
+(3) Measure the state, which will be marked with high probability.
+Using results from \cite{bbbgl98}, the running time of this algorithm
+is $O(T)$ which is still $O(\sqrt{N})$ for $t \ll N$. We confirm this
+through actual simulations in the next section.
+
+\section{Simulation}
+\label{sec:sim}
+
+Basic lookup was simulated using the QCL software by Bernhard
+\"Omer \cite{oemer00}, and the number of Grover iterations $T$
+were measured versus the number of simulated address bits $a$.
+Note that we fix $d=2$
+because of the limits of simulation hardware, and the fact that query
+complexity in this case is the same for any computer.
+
+The results are plotted on semilog axes in Figure \ref{qsim:fig} to make the
+exponential curve easier to fit linearly. The large initial error is
+due to rounding errors for small numbers, but afterwards all plots 
+converge well.
+The lower and upper bounds of the running time are given for at
+least 90\% probability of success. Parties interested in the
+implementation details of quantum operators are encouraged to download
+the source code.\footnote{\texttt{http://www.cs.washington.edu/homes/ppham/qram-qcl.tar.gz}}
+
+\begin{figure}[hpt!]
+\begin{center}
+%\input{search-addr}
+\end{center}
+\label{qsim:fig}
+\caption{}
+\end{figure}
+
+\section{Algorithms}
+\label{sec:algs}
+
+The basic Grover algorithm performs the relational select operation.
+Many other classical operations can be implemented using different
+query functions. In this section, we present efficient quantum
+algorithms for subset search and nearest neighbors, with running times
+and data structure space in Table \ref{alg:tab}. We consider query time for
+both classical and quantum cases, but memory accesses to RAM/QRAM are
+considered constant. These algorithms assume that tables can fit
+entirely in main memory; when this is not the case, the disk I/O of
+the quantum solution never exceeds that of the classical solution.
+%A brief sketch of each algorithm and a definition of symbols is given
+%in each of the following two subsections.
+
+Because Grover search is a probabilistic algorithm, it can be
+repeated $O(\log(1/\epsilon))$ times independently to get an
+exponentially small error $\epsilon$. Whether this justifies the
+quadratic speedup (or less) in these cases is up for debate, since
+many classical randomized algorithms are likewise encumbered.
+
+%However, there are likely to be future database algorithms with a 
+%greater speedup for which this overhead is justified.
+
+\begin{figure}[hbt!]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Problem} & \textbf{Classical Time} & \textbf{Classical Space} & \textbf{Quantum Time} & \textbf{Quantum Space}\\
+\hline
+%Join & Hash/Sort Join & $O(N\log{N})$ & $O(N)$ & $O(N^{3/2})$ & $O(N)$\\
+Subset Search & $O(|gk|)$ & $O(|Ng|)$ & $O(g\sqrt{kt})$ & $O(|Ng|)$\\
+\hline
+Nearest Neighbor & $d\log{N}/\min{(\epsilon^2,1)}$ &
+$N^{O(1/\epsilon^2 + \log{(1+\epsilon)}/(1+\epsilon))}$ & $O(d\sqrt{N}))$ (query) & O(1)\\
+         &        & (update \& query) & O(1) (update) & \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Summary of quantum algorithm speedups.}
+\label{alg:tab}
+\end{figure}
+
+%% \subsection{Join}
+%% For simplicity, assume we wish to join two tables, $R$ and $S$,
+%% of comparable size $N$ where each tuple in $R$ joins with exactly one tuple
+%% in $S$. a join produces a
+%% new table with a tuple for every pair of tuples in $R$ and $S$ that have
+%% the same value for the some specified join fields. Classically, the
+%% best algorithms either hash or sort one table and then traverse the
+%% other table in time $O(N\log{N})$. Quantumly, we can create a tensor
+%% product (in this case, essentially a Cartesian product) between $R$ and
+%% $S$ by retrieving $R$ and $S$ separately from our QRAM, moving then to
+%% separate registers, and then concatenating them in time $O(N)$ to
+%% produce a new table of size $O(N^2)$.
+%% Note that in each new tuple, the join fields of $R$ and $S$ are
+%% duplicated. Our query function returns $\ket{1}$ if the values in these
+%% duplicate columns are the same and $\ket{0}$ otherwise. Performing
+%% Grover search then yields running time $O(\sqrt{N^2}) + O(N) = O(N)$.
+
+\subsection{Subset Search}
+
+Given a table of items with foreign keys into another table of group IDs,
+the problem of subset search is to find all groups which contain a
+particular subset of items. Call the total number of different group IDs
+$g$ and the size of the query subset
+$k$. Then the best known classical algorithm maintains a $g$-bit vector
+for each of $N$ items and subset search is performed by ANDing together the
+appropriate $k$ vectors.
+A quantum algorithm also makes use of bit vectors, but it retrieves a
+superposition of the $k$ vectors and checks the $g$ desired bits on
+them in parallel. Performing Grover search on these $k$ states to find
+the $t$ answers then takes $O(g\sqrt{kt})$ time and the same classical
+space. If $t=k$, then there is no quantum speedup, as expected.
+
+\subsection{Nearest Neighbor}
+
+Given a database of $N$ tuples with binary fields representing features,
+we can represent $d$ Boolean dimensions 
+ with a $d$-bit vector and define the
+feature distance between two tuples as the Hamming distance of these vectors.
+The best known classical algorithm \cite{indyk04} is randomized
+and also has an overhead for driving down error. The quantum algorithm
+as usual retrieves a superposition of the $N$ tuples and queries the
+Hamming distance to a given input in $O(d)$ time in parallel and stores
+it in a scratch register. Then it uses Grover search on this scratch
+register to find the minimum in $O(\sqrt{N})$
+\cite{durr96} for a total time of $O(d\sqrt{N})$.
+In this case, the comparison is not clear between $\log{N}/\epsilon^2$ on
+the classical side and $\log(1/\epsilon)\sqrt{N}$ on the quantum side, but
+a quantum insertion is a simple $O(1)$ write with no extra storage overhead.
+
+\section{Conclusion and Future Extensions}
+\label{sec:conclude}
+
+In this work, we have adapted one of the central results of quantum
+computing, Grover's search algorithm, to two prominent problems of
+classical relational databases. In doing so, we have designed the novel
+concept of a quantum RAM and simulated a generalized quantum search
+algorithm successfully.
+However, this work is primarily limited by the current experimental
+nature of quantum computers, and it is uncertain whether an efficient
+QRAM can ever be built. In the theoretical realm, however, quantum search
+can immediately be extended to aggregate counting functions, duplicate
+elimination, and query size estimation.
+Much more simulation work remains to be done using larger,
+more realistic datasets, especially for the theoretical
+problems studied in this project.
+In conclusion, the author wishes to thank Dave Bacon for helpful advice
+during the
+course of this project.
+
+\bibliography{report}
+\bibliographystyle{tocplain}
+
+\end{document}
