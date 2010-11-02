@@ -1,0 +1,421 @@
+\documentclass{article}
+
+\usepackage{times}
+\usepackage{fullpage}
+\usepackage{eprint}
+\usepackage{rotating}
+\usepackage{eepic}
+\usepackage{amsfonts}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+
+%\tocdetails{%
+%   volume=0, number=5, year=2005, firstpage=78,
+%   received={October 15, 2004}, 
+%   published={December 31, 2004}
+%}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+%\newtheorem{idea}{Idea}[section]
+
+%\theoremstyle{definition}
+%\newtheorem{thought}[theorem]{Thought}
+%\newtheorem{thought}{Thought}[section]
+
+\title{Quantum Compiling with the Super-Kitaev Algorithm}
+\date{November 2nd 2010}
+\author{Paul Pham}
+
+\input{Qcircuit}
+
+\begin{document}
+
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+\newcommand{\norm}[1]{\parallel #1 \parallel}
+
+\maketitle
+
+\section{Introduction}
+
+When describing a quantum algorithm, we use a high-level formalism of
+gates operating on qubits in the quantum circuit model.
+We can treat gates operating on an n-qubit quantum computer as unitary
+matrices of dimension $2^n \times 2^n$ with unit determinant.
+However, in experimental settings,
+we can only perform some gates efficiently, and these are usually local,
+2-qubit operations. Moreover, most of our results for fault-tolerant
+quantum computing in the presence of noise stipulates that we have a finite
+number of universal gates we can perform with some limited precision.
+
+How then, do we translate our quantum algorithms into something that can run
+on hardware? In analogy to classical computers, we describe this translation
+as {\em quantum compiling}. One of the central results of quantum computing,
+and the reason why it is interesting, is that we can actually perform this
+quantum compiling efficiently. This first result is called the
+Solovay-Kitaev theorem \cite{Dawson2005}, which provides an efficient way to
+approximate any quantum gate. I presented this algorithm in an earlier talk, but
+I'll briefly review the results here. However, the constants for this method
+scale exponentially with the number of qubits and involve an intractably
+large preprocessing step.
+
+The second result is more recent but much less well-known, and is called
+the Super-Kitaev algorithm (named by Aram Harrow). This new method improves upon
+the bounds for compiled circuit size over the normal Solovay-Kitaev algorithm,
+but comparison is more complicated. Super-Kitaev introduces some new tradeoffs to the
+comparison, such as ancillary qubits and classical postprocessing. In doing so,
+Kitaev also gives us some interesting modules which are worth studying for
+their own sake. In these notes, we will outline the Super-Kitaev algorithm at
+a high-level to develop some intuition about why it works, describe how we 
+might implement it in practice.
+
+\section{Definitions}
+
+\subsection{Approximation vs. Simulation}
+
+I'll use the terms "approximation" and "simulation" interchangeably, as in
+a quantum compiler will take an input circuit and produce as output a new
+circuit which approximates or simulates the original circuit to some degree
+of precision.
+
+\subsection{Standard Set}
+
+We use the following standard set $\mathcal{Q}$ from \cite{ksv2002}
+
+\begin{equation}
+\mathcal{Q} = \{ H, K, K^{-1}, \Lambda(\sigma^x), \Lambda^2(\sigma^x) \}
+\end{equation}
+
+where these gates are defined as follows:
+
+\begin{equation*}
+H = \normtwo \left(
+  \begin{array}{cc}
+    1 & 1 \\
+    1 & -1 \\
+  \end{array} \right)
+\end{equation*}
+
+\begin{equation*}
+K = \left(
+  \begin{array}{cc}
+    1 & 0 \\
+    0 & i \\
+  \end{array} \right)
+\end{equation*}
+
+Even though realistic implementations of a quantum computer may have a different
+set of hardware instructions, Kitaev's analysis assumes that the standard set
+can always be efficiently compiled down further into this hardware set.
+
+Note that this may not be valid. For example, in order for ion traps to perform
+even a Hadamard gate to any precision requires a combination of $\sigma^x$ and
+$\sigma^z$ gates. However, we won't let this bother us for now.
+
+\subsection{Parameters}
+
+For these notes, we restrict ourselves to $d=2^n$ for an $n$-qubit system (qudits)
+and consider the problem of compiling an entire circuit $C$ of $L$ gates with depth
+$d$ to a new, compiled circuit $C'$ of size $L'$ and depth $d'$ which approximates
+$C$ within some error. There is some overhead in the compiled circuit, so in
+general $C'$ is larger (that is, $L' > L$ and $d' > d$). It's also known that
+in order to approximate a circuit with $L$ gates to a total precision of $\epsilon$
+requires each gate to be approximated to a precision of $L/\epsilon$, which requires
+the following number of gates. We'll find this $l$ parameter useful in describing the compiler overheads of
+both the Solovay-Kitaev and Super-Kitaev methods.
+
+Why do we care about depth? This gives us a heuristic for how ``parallelized'' our
+circuit is. If we flatten our circuit into layers $\{l_i\}$, where each layer $l_i$
+is dependent only on inputs from the previous layer $l_{i-1}$ and produces
+only outputs to the next layer $l_{i+1}$, then all the gates within the layer
+$l_i$ can be performed in parallel. All other things being equal, a circuit with low depth will complete
+faster than one with high depth, although in practice we can only execute
+fixed-width circuits.
+
+Also, when running the compiler, there are several time resources to consider.
+The first is classical preprocessing time, denoted $T_{pre}$, which is a way of optimizing
+the generated quantum circuit by spending more classical resources upfront.
+The second is classical postprocessing time, denoted $T_{post}$, which likewise
+is meant to reduce the size of the quantum circuit but depends on quantum
+measurements and may be fed back into future quantum operations later.
+
+A summary of these parameters are provided below:
+
+\begin{tabular}{|c|c|}
+\hline\\
+$d$ & dimension of quantum gates\\
+$n$ & number of qubits, $d=2^n$\\
+$\epsilon$ & the desired accuracy of the compiled circuit\\
+$L$ & size of input circuit to be compiled, in gates from $\mathcal{Q}$\\
+$d$ & depth of input circuit to be compiled\\
+$L'$ & size of compiled output circuit, in gates from $\mathcal{Q}$\\
+$d'$ & depth of compiled circuit to be compiled\\
+$l$ & $=O(\log{L/\epsilon})$, shorthand parameter for asymptotic analysis\\
+$T$ & classical running time of the compiling algorithm\\
+$T_{pre}$ & classical preprocessing time, before the compiler is run\\
+$T_{post}$ & classical postprocessing time, after the compiler is run or during\\
+\hline\\
+\end{tabular}
+
+\subsection{Universal Instruction Sets and Compiled Sequences}
+More formally, suppose we have a universal instruction set $\mathcal{G}$ which
+contains some finite number of gates $g \in SU(d)$ and also their inverses $g^\dagger$.
+$\mathcal{G}$ is universal for $SU(d)$ in that it generates a dense subgroup.
+In other words, given an arbitrary quantum gate $U \in SU(d)$ and a desired
+accuracy $\epsilon$ we can find a product $S=g_1 \cdots g_m$ from $\mathcal{G}$
+which approximates $U$ to within $\epsilon$ using some distance function.
+
+We can either use the matrix operator norm to define the distance function
+such as:
+
+\begin{equation}
+d(U,S) \equiv \norm{U - S} \equiv \sup_{\norm{\ket{\psi}}=1} \norm{(U-S)\ket{\psi}} < \epsilon
+\end{equation}
+
+There is also a trace measure introduced by Austin Fowler which disregards
+the global phase factor, so that we don't waste time trying to approximate
+the unmeasurable phase of our target gate.
+
+\begin{equation}
+d(U,S) = \sqrt{\frac{d - \norm{\mathrm{tr}(U^\dagger S)}}{d}}
+\end{equation}
+
+\section{History}
+
+The theorem which is now called Solovay-Kitaev was discovered by Solovay in
+1995 in an unpublished manuscript and independently later discovered by
+Kitaev in 1997 \cite{nc00}.
+
+Also in 1995, Seth Lloyd found that any two distinct single-qubit rotations are
+universal for approximating an arbitrary single-qubit rotation, but that this
+approximation could be exponentially long in both time and length.
+
+In 200
+
+In 2002, Kitaev, Shen, and Vyalyi published their book which contains an
+application of parallelized phase estimation towards simulating a quantum
+circuit (what we are calling Super-Kitaev).
+That is, an alternative quantum compiler to Solovay-Kitaev which has
+asymptotically better circuit size and depth, but using ancillary qubits
+and having as yet unknown multiplicative constants.
+
+In 2003, Aram, Ben Recht, and Ike showed a lower bound on any Solovay-Kitaev
+style approximation of $T,L = O(\log{1/\epsilon})$.
+
+In 2005, Chris Dawson and Mike Nielsen published their pedagogical review
+paper which I used as the basis for my previous work on implementing a
+Solovay-Kitaev compiler.
+
+\section{Review of Solovay-Kitaev}
+
+Here I'll remind you of the basic pseudo-code for normal Solovay-Kitaev.
+Our development is taken from the excellent review paper \cite{Dawson2005}.
+
+\begin{algorithmic}[1]
+\STATE \textsc{function} $\tilde{U}_n \leftarrow$ SOLOVAY-KITAEV$(U,n)$
+\IF{$n == 0$}
+\STATE $\tilde{U}_n \leftarrow $ BASIC-APPROX$(U)$
+\ELSE
+\STATE $\tilde{U}_{n-1} \leftarrow$ SOLOVAY-KITAEV$(U, n-1)$
+\STATE $A,B \leftarrow $ FACTOR$(U\tilde{U}^\dagger_{n-1})$
+\STATE $\tilde{A}_{n-1} \leftarrow $ SOLOVAY-KITAEV$(A, n-1)$
+\STATE $\tilde{B}_{n-1} \leftarrow $ SOLOVAY-KITAEV$(B, n-1)$
+\STATE $\tilde{U}_n \leftarrow \tilde{A}_{n-1}\tilde{B}_{n-1}\tilde{A}^\dagger_{n-1}\tilde{B}^\dagger_{n-1}\tilde{U}_{n-1}$
+\ENDIF
+\RETURN $\tilde{U}_n$
+\end{algorithmic}
+
+This algorithm works by way of recursive, successive approximation.
+
+The BASIC-APPROX function above does a lookup (via some kd-tree search
+maneuvers through higher-dimensional vector spaces) using the results of
+precompiled sequences from the instruction set $\mathcal{G}$. This can be
+done offline and reused across multiple runs of the compiler, assuming
+$\mathcal{G}$ for your quantum computer doesn't change.
+
+The FACTOR function performs a balanced group commutator decomposition,
+$U = ABA^\dagger B^\dagger$, and then recursively approximates the $A$ and $B$
+operators using Solovay-Kitaev. Intuitively, when they are multiplied
+together again, along with their inverses, their errors (which go like
+$\epsilon$) are symmetric and cancel out in such a way that the resulting
+product $U$ has errors which go like $\epsilon^2$. In this manner, we can
+eventually sharpen our desired error down to any value.
+
+And that's all I'm going to say about that.
+
+\section{The Super-Kitaev Algorithm}
+
+Our development of the Super-Kitaev algorithm follows closely the one in the
+book by Kitaev, Shen, and Vyalvi \cite{ksv2002}, although of course, it is
+simply called Theorem 13.5. Likewise, we will cite the theorem / lemma numbers
+from the book, which contains a self-contained description of all the parts
+needed for Super-Kitaev.
+
+The basic steps of this method are the following:
+
+\begin{enumerate}
+\item Precompiling to get $L'$ gates in $\mathcal{Q} \cup \Lambda(e^{i\phi})$.
+Here we see that there is an
+efficient decomposition of several important gates into the standard set and
+controlled-phase-shifts.
+\item Implementing a controlled-phase-shift. This ends up being the hardest
+part of simulating a quantum circuit, and requires each of the remaining steps.
+\item Use phase estimation of an addition operator to magic states in order to
+enact the desired phase shift. This requires both efficient creation of
+{\em magic states} and an efficient {\em quantum adder} circuit.
+\item Create one magic state, and then make $L'$ copies of it. Use one copy
+to simulate each $\Lambda(e^{i\phi})$ gate.
+\end{enumerate}
+
+\subsection{Precompiling to the Standard Set}
+\label{subsec:precompile}
+
+In order to perform the precompilation step, we need to know that we can
+change any unitary in $SU(d)$ by tensor products of unitaries in $SU(2)$
+and $SU(4)$, that is, single- and two-qubit gates.
+
+To prove the universality of the standard set $\mathcal{Q}$ is beyond the
+scope of these notes. For our purposes, we assume that we can precompile
+any gate down to single-qubit rotations $U \in SU(2)$ and
+controlled-single-qubit rotations $\Lambda(U), U\in SU(2)$.
+(For example, it's know how to do that for the Toffoli gate, which is what we
+need to implement our quantum adder circuit).
+From there, how do we get down to the standard set?
+
+%\begin{theorem}[Lemma 8.2]
+%\label{lemma82}
+%Any arbitrary unitary operator $U$ of dimension $d \times d$ can be represented
+%as a product of $d(d-2)/2$ matrices of the form:
+%
+%\begin{equation*}
+%\left( \begin{array}{cccccccc}
+%     1 & 0      & \cdots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%     0 & 1      & \cdots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \ddots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots &      a &      b & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots &      c &      d & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \vdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \cdots & 1 & 0\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \cdots & 0 & 1\\
+%\end{array}
+%\right)
+%\end{equation*}
+%
+%where $\left( \begin{array}{cc}
+%a & b\\
+%c & d\\
+%\end{array} \right) \in SU(2)$
+%\end{theorem}
+%
+%\begin{proof}
+%The running time of this algorithm is $O(M^3) \cdot \mathrm{poly}(\log(1/\delta)$.
+%\end{proof}
+
+\begin{theorem}[Problem 8.1]
+Any single-qubit gate $U$ can be simulated using $\mathcal{Q} \cup \{ \Lambda(e^{i\phi}) \}$.
+\end{theorem}
+
+\begin{proof}
+Using the Euler angle decomposition into $X$ and $Z$ rotations, we can express any
+unitary $U$ as follows, with real angles $\phi$, $\gamma$, $\beta$, $\alpha$:
+
+\begin{equation}
+U = e^{i\phi}e^{i(\gamma/2)\sigma^z}e^{i(\beta/2)\sigma^x}e^{i(\alpha/2)\sigma^z}
+\end{equation}
+This involves solving four equations in four variables and can be done in constant time.
+
+Now how do we implement each of the elements of the Euler angle decomposition from
+the $\mathcal{Q}$? Using these identities:
+
+\begin{equation}
+e^{i\phi} = \Lambda(e^{i\phi})\sigma^x\Lambda(e^{i\phi})\sigma^x
+\end{equation}
+\begin{equation}
+\sigma^x = H\Lambda(e^{i\pi})H
+\end{equation}
+\begin{equation}
+e^{i\phi\sigma^z} = \Lambda(e^{-i\phi)\sigma^x\Lambda(e^{i\phi)\sigma^x
+\end{equation}
+\begin{equation}
+e^{i\phi\sigma^x} = H e^{i\phi\sigma^z} H
+\end{equation}
+\end{proof}
+
+\begin{theorem}[Problem 8.2]
+Any controlled operator $\Lambda(U)$ where $U \in SU(2)$ can be simulated using
+$\mathcal{Q} \cup \{ \Lambda(e^{i\phi})$.
+\end{theorem}
+
+\begin{proof}
+We can represent the controlled operator as $\Lambda(U) = \Lambda(e^{i\phi})\Lambda(V)$.
+$\Lambda(e^{i\phi})$ is already in our set, so it remains to implement
+$\Lambda(V)$, where $V \in SU(2)$. Geometrically, we can decompose any
+three-dimensional rotation into two $180^{\circ}$ rotations about appropriate
+axes. Using the homomorphism between $SO(3)$ and $SU(2)$ and the fact that
+$\sigma^x$ corresponds to a $180^{\circ}$ rotation about the $x$-axis.
+
+\begin{equation}
+V = A\sigma^x A^{-1} B\sigma^x B^{-1}
+\end{equation}
+\end{proof}
+
+\subsection{Controlled-Phase Shift}
+\label{subsec:phase-shift}
+
+Now we are down to the standard set $\mathcal{Q}$, plus that pesky
+controlled-phase-shift gate $\Lambda{e^{i\phi}}$. This is in general a hard
+gate to implement, and one of the reasons why we need a quantum compiler in
+the first place!
+
+We could just use normal Solovay-Kitaev and find some sequence of $X$ and
+$Z$ gates which implement $\Lambda{e^{i\phi}}$, but that wouldn't be any
+fun and we would have no reason to bring in all this extra machinery to
+do Super-Kitaev.
+
+To get started, we will need to introduce a magic state $\ket{\psi}$ with the
+parameters $n$ and $k$ such that
+
+\begin{equation}
+\ket{\psi_{n,k}} = \frac{1}{\sqrt{2^n}-1} \sum_{j=0}^{2^n-1} e^{2\pi i j k / 2^n} \ket{j}
+\end{equation}
+
+where $0 \le k \lt 2^n$. If you think this looks suspiciously like a
+Quantum Fourier Transform state of the computational basis, you are correct.
+However that doesn't help us here, because QFT is way too complicated to use as
+our basic compiler. What we need instead is to make use of the index-dependent
+phases of each state, and addition to move to the right phase that we want,
+and easy creation of a superposition of these magic states.
+
+
+
+
+\subsection{Phase Estimation}
+\label{subsec:phase-estimate}
+
+\section{Conclusion and Future Extensions}
+\label{sec:conclude}
+
+In this work, we have adapted one of the central results of quantum
+computing, Grover's search algorithm, to two prominent problems of
+classical relational databases. In doing so, we have designed the novel
+concept of a quantum RAM and simulated a generalized quantum search
+algorithm successfully.
+However, this work is primarily limited by the current experimental
+nature of quantum computers, and it is uncertain whether an efficient
+QRAM can ever be built. In the theoretical realm, however, quantum search
+can immediately be extended to aggregate counting functions, duplicate
+elimination, and query size estimation.
+Much more simulation work remains to be done using larger,
+more realistic datasets, especially for the theoretical
+problems studied in this project.
+In conclusion, the author wishes to thank Dave Bacon for helpful advice
+during the
+course of this project.
+
+\bibliography{report}
+\bibliographystyle{ieee}
+
+\end{document}
