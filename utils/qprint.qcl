@@ -1,0 +1,31 @@
+// Prints a quantum register. This will collapse it.
+
+procedure Qprint(qureg q, int label) {
+  int c;
+  int d = #q;
+  int i;
+
+  measure q,c;
+  print label,"|",c,">";
+}
+
+procedure QarrayPrint(qureg data, int a, int r) {
+  int d = #data;
+  int n = 2^a;
+  int m = n * r;
+  int i;
+  int begin;
+  int end;
+
+  if (m != d) {
+    print "m=",m," d=",d;
+    exit "Data size mismatch.";
+  }
+
+  for i=0 to n-1 {
+    begin = i * r;
+    end   = ((i+1)*r) - 1;
+    Qprint(data[begin:end], i);
+  }
+
+}
