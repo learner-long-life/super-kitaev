@@ -1,0 +1,15 @@
+//include "utils/toffoli.qcl";
+
+// Applies a one-bit function specified as a two-qubit (two-row) table
+// Assumes that output starts out as 0
+procedure applyfunction(qureg table, qureg in, qureg output) {
+	qprint(table, 8);
+	// Flip input so we can apply the zero case
+	Not(in);
+	qprint(in, 9);
+	Toffoli(output, table[0], in);
+	// Flip back the input so we can apply the one case
+	Not(in);
+	Toffoli(output, table[1], in);
+	qprint(table[1], 10);
+}

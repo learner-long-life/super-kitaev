@@ -1,0 +1,82 @@
+operator Toffoli(qureg q, qureg c1, qureg c2) {
+	Matrix8x8((1,0),(0,0),(0,0),(0,0), (0,0),(0,0),(0,0),(0,0),
+	          (0,0),(1,0),(0,0),(0,0), (0,0),(0,0),(0,0),(0,0),
+	          (0,0),(0,0),(1,0),(0,0), (0,0),(0,0),(0,0),(0,0),
+	          (0,0),(0,0),(0,0),(1,0), (0,0),(0,0),(0,0),(0,0),
+	          (0,0),(0,0),(0,0),(0,0), (1,0),(0,0),(0,0),(0,0),
+	          (0,0),(0,0),(0,0),(0,0), (0,0),(1,0),(0,0),(0,0),
+	          (0,0),(0,0),(0,0),(0,0), (0,0),(0,0),(0,0),(1,0),
+	          (0,0),(0,0),(0,0),(0,0), (0,0),(0,0),(1,0),(0,0),
+	          q & c1 & c2);
+}
+
+include "utils/qprint.qcl";
+
+// Now we narrow the tables by a, see circuit on Notes p. 21
+
+operator cnarrowhelper(qureg addend, qureg ancilla) {
+	CNot(ancilla[1],addend);
+	CNot(ancilla[2],addend);
+	CNot(ancilla[3],addend);
+	// Flip addend so we can take negative-controlled-NOT
+	Not(addend);
+	CNot(ancilla[3],addend);
+}
+
+operator snarrowhelper(qureg addend, qureg ancilla) {
+	// First toggle the one's of the sum output
+	CNot(ancilla[0], addend);
+	CNot(ancilla[3], addend);
+	// Next toggle the zero's of the sum output
+	Not(addend);
+	CNot(ancilla[1], addend);
+	CNot(ancilla[2], addend);
+}
+	
+procedure snarrow(qureg s, qureg a, qureg b, qureg scratch) {
+
+	snarrowhelper(a, scratch);
+
+	qprint(scratch, 5);
+	
+	Not(b);
+	Toffoli(s[0], b, scratch[0]);
+	Toffoli(s[1], b, scratch[1]);
+	Not(b);
+	Toffoli(s[0], b, scratch[2]);
+	Toffoli(s[1], b, scratch[3]);
+
+	qprint(s, 6);
+	
+	!snarrowhelper(a, scratch);
+}
+
+procedure cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
+	
+	// a narrowed into scratch
+	cnarrowhelper(a, scratch);
+	
+	qprint(scratch,3);
+	// Expected output
+	// 3 | 14 > 
+	
+	// Now we narrow by b0 into c0
+	// Flip b[0] so we can take negative-CCNOT
+	Not(b[0]);
+	Toffoli(c[0], scratch[0], b);
+	Toffoli(c[1], scratch[1], b);
+	// Flip b[0] back so we can take normal CCNOT
+	Not(b[0]);
+	Toffoli(c[0], scratch[2], b);
+	Toffoli(c[1], scratch[3], b);
+	
+	qprint(c,4);
+	// Expected output, since we generate a carry bit no matter what
+	// 4 | 3 >
+	
+	// Now we un-narrow a and b to free up scratch space
+	!cnarrowhelper(a, scratch);
+	
+	qprint(scratch,0);
+	
+}
