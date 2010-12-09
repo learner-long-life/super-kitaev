@@ -1,0 +1,108 @@
+include "adder/narrow.qcl";
+
+// We store two 4-bit numbers to add in a and b
+qureg a[4];
+qureg b[4];
+qureg scratch[4];
+// Registers for narrowed carry tables
+qureg c0[2];
+qureg c1[2];
+qureg c2[2];
+qureg c3[2];
+qureg s0[2];
+qureg s1[2];
+qureg s2[2];
+qureg s3[2];
+qureg s4[2];
+qureg carry[5];
+qureg sum[4];
+
+// Fill the values of a and b, 0-based indexing
+// a = 0b 1011 = 11
+Not(a[3]);
+Not(a[1]);
+Not(a[0]);
+// b = 0b 0111 = 7
+Not(b[2]);
+Not(b[1]);
+Not(b[0]);
+
+// positions 0 and 1 generate a carry bit no matter what
+// position 2 propagates a carry bit
+// position 3 propagates a carry bit
+
+// position 0 sums to 0 no matter what
+// position 1 sums to 0 if c_i = 0 and 1 otherwise
+// positions 2 and 3 sums to 1 if c_i = 0 and 0 otherwise
+
+qprint(a,1);
+qprint(b,2);
+// Expected output
+// 1 | 11 > 
+// 2 | 7 > 
+
+cnarrow(c0, a[0], b[0], scratch);
+// Expected output
+// 3 | 14 > 
+// 4 | 3 > 
+
+cnarrow(c1, a[1], b[1], scratch);
+// Expected output
+// 3 | 14 > 
+// 4 | 3 > 
+
+cnarrow(c2, a[2], b[2], scratch);
+// Expected output
+// 3 | 8 > 
+// 4 | 2 > 
+
+cnarrow(c3, a[3], b[3], scratch);
+// Expected output
+// 3 | 14 > 
+// 4 | 2 > 
+
+snarrow(s0, a[0], b[0], scratch);
+// Expected output
+// 5 | 9 > 
+// 6 | 2 > 
+
+snarrow(s1, a[1], b[1], scratch);
+// Expected output
+// 5 | 9 > 
+// 6 | 2 > 
+
+snarrow(s2, a[2], b[2], scratch);
+// Expected output
+// 5 | 6 > 
+// 6 | 1 > 
+
+snarrow(s3, a[3], b[3], scratch);
+// Expected output
+// 5 | 9 > 
+// 6 | 1 > 
+
+include "adder/apply.qcl";
+
+qprint(scratch, 0);
+
+// Sum position 0
+// in = |0>
+
+procedure halfadder(qureg sumtable, qureg carrytable, qureg carryin,
+	qureg carryout, qureg sumout) {
+	
+	// carryinout initially contains the carry in bit from previous adder
+	// Compute the sum given the carryin
+	applyfunction(sumtable, carryin, sumout);
+	// Compute the carry out given the carry in
+	applyfunction(carrytable, carryin, carryout);
+}
+
+halfadder(s0, c0, carry[0], carry[1], sum[0]);
+halfadder(s1, c1, carry[1], carry[2], sum[1]);
+halfadder(s2, c2, carry[2], carry[3], sum[2]);
+halfadder(s3, c3, carry[3], carry[4], sum[3]);
+
+qprint(sum & carry[4],7);
+// Expected output
+// 7 | 18 >
