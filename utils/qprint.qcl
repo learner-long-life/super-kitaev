@@ -1,6 +1,7 @@
+
 // Prints a quantum register. This will collapse it.
 
-procedure Qprint(qureg q, int label) {
+procedure qprint(qureg q, int label) {
   int c;
   int d = #q;
   int i;
@@ -9,7 +10,7 @@ procedure Qprint(qureg q, int label) {
   print label,"|",c,">";
 }
 
-procedure QarrayPrint(qureg data, int a, int r) {
+procedure qarrayPrint(qureg data, int a, int r) {
   int d = #data;
   int n = 2^a;
   int m = n * r;
@@ -25,7 +26,7 @@ procedure QarrayPrint(qureg data, int a, int r) {
   for i=0 to n-1 {
     begin = i * r;
     end   = ((i+1)*r) - 1;
-    Qprint(data[begin:end], i);
+    qprint(data[begin:end], i);
   }
 
 }
