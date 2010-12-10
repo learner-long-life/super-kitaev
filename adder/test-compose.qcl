@@ -1,0 +1,67 @@
+include "adder/test-narrow.qcl";
+
+// Compose the function tables given in test-narrow.qcl
+
+// Note that we should have a special compose2table function optimize for
+// the case of c_in = 0, such as all Fi,0 functions
+// Procedure to compose two 2-line function tables into a new 2-line table
+operator compose2table(qureg newtable, qureg table1, qureg table2) {
+	//qprints(table1, "Table1=");
+	//qprints(table2, "Table2=");
+
+	// The one-ness of table2 is transferred to newtable based on the
+	// one-nesses of table1
+	Toffoli(newtable[0], table1[0], table2[1]);
+	Toffoli(newtable[1], table1[1], table2[1]);
+	
+	// Flip table1 bits so we can control on the zero-ness
+	Not(table1[0]);
+	Not(table1[1]);
+	
+	Toffoli(newtable[0], table1[0], table2[0]);
+	Toffoli(newtable[1], table1[1], table2[0]);
+
+	// Flip table1 bits back for reversibleness
+	Not(table1[0]);
+	Not(table1[1]);
+	
+	//qprints(newtable, "NewTable=");
+}
+
+// Composed function tables
+qureg F10[2];
+qureg F11[2];
+qureg F20[2];
+
+compose2table(F10, c0, c1);
+compose2table(F11, c2, c3);
+compose2table(F20, F10, F11);
+
+// Compute carry bits in a recursive, binary tree
+// carry[0] should stay as |0>
+qprints(carry[0], "q0=");
+
+// Compute q4
+applyfunction(F20, carry[0], carry[4]);
+qprints(carry[4], "q4=");
+// Compute q2
+applyfunction(F10, carry[0], carry[2]);
+qprints(carry[2], "q2=");
+// Compute q1 and q3
+applyfunction(c0, carry[0], carry[1]);
+qprints(carry[1], "q1=");
+applyfunction(c1, carry[2], carry[3]);
+qprints(carry[3], "q3=");
+
+// Dummy bit for half adder below to compute carry out bit into
+qureg dummy[1];
+
+// Verify the carry bits
+halfadder(s0, c0, carry[0], dummy, sum[0]);
+halfadder(s1, c1, carry[1], dummy, sum[1]);
+halfadder(s2, c2, carry[2], dummy, sum[2]);
+halfadder(s3, c3, carry[3], dummy, sum[3]);
+
+qprint(sum & carry[4],7);
+// Expected output
+// 7 | 18 >
