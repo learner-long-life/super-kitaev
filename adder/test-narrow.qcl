@@ -1,3 +1,4 @@
+include "utils/qprint.qcl";
 include "adder/narrow.qcl";
 
 // We store two 4-bit numbers to add in a and b
@@ -5,15 +6,17 @@ qureg a[4];
 qureg b[4];
 qureg scratch[4];
 // Registers for narrowed carry tables
-qureg c0[2];
-qureg c1[2];
-qureg c2[2];
-qureg c3[2];
-qureg s0[2];
-qureg s1[2];
-qureg s2[2];
-qureg s3[2];
-qureg s4[2];
+qureg ctables[2*4];
+qureg c0 = ctables[0..1];
+qureg c1 = ctables[2..3];
+qureg c2 = ctables[4..5];
+qureg c3 = ctables[6..7];
+qureg stables[2*4];
+qureg s0 = stables[0..1];
+qureg s1 = stables[2..3];
+qureg s2 = stables[4..5];
+qureg s3 = stables[6..7];
+
 qureg carry[5];
 qureg sum[4];
 
@@ -41,63 +44,56 @@ qprint(b,2);
 // 1 | 11 > 
 // 2 | 7 > 
 
-cnarrow(c0, a[0], b[0], scratch);
+addernarrow(stables, ctables, a, b, scratch);
+
+//cnarrow(c0, a[0], b[0], scratch);
 // Expected output
 // 3 | 14 > 
 // 4 | 3 > 
 
-cnarrow(c1, a[1], b[1], scratch);
+//cnarrow(c1, a[1], b[1], scratch);
 // Expected output
 // 3 | 14 > 
 // 4 | 3 > 
 
-cnarrow(c2, a[2], b[2], scratch);
+//cnarrow(c2, a[2], b[2], scratch);
 // Expected output
 // 3 | 8 > 
 // 4 | 2 > 
 
-cnarrow(c3, a[3], b[3], scratch);
+//cnarrow(c3, a[3], b[3], scratch);
 // Expected output
 // 3 | 14 > 
 // 4 | 2 > 
 
-snarrow(s0, a[0], b[0], scratch);
+//snarrow(s0, a[0], b[0], scratch);
 // Expected output
 // 5 | 9 > 
 // 6 | 2 > 
 
-snarrow(s1, a[1], b[1], scratch);
+//snarrow(s1, a[1], b[1], scratch);
 // Expected output
 // 5 | 9 > 
 // 6 | 2 > 
 
-snarrow(s2, a[2], b[2], scratch);
+//snarrow(s2, a[2], b[2], scratch);
 // Expected output
 // 5 | 6 > 
 // 6 | 1 > 
 
-snarrow(s3, a[3], b[3], scratch);
+//snarrow(s3, a[3], b[3], scratch);
 // Expected output
 // 5 | 9 > 
 // 6 | 1 > 
-
-include "adder/apply.qcl";
 
 qprint(scratch, 0);
 
 // Sum position 0
 // in = |0>
 
-procedure halfadder(qureg sumtable, qureg carrytable, qureg carryin,
-	qureg carryout, qureg sumout) {
-	
-	// carryinout initially contains the carry in bit from previous adder
-	// Compute the sum given the carryin
-	applyfunction(sumtable, carryin, sumout);
-	// Compute the carry out given the carry in
-	applyfunction(carrytable, carryin, carryout);
-}
-
+// This is a linear-depth (O(n)) ripple-carry adder to comparison
+// We feed in the carry out bit of the previous half adder as the carry in
+// bit to the next half adder.
 halfadder(s0, c0, carry[0], carry[1], sum[0]);
 halfadder(s1, c1, carry[1], carry[2], sum[1]);
 halfadder(s2, c2, carry[2], carry[3], sum[2]);
@@ -106,3 +102,12 @@ halfadder(s3, c3, carry[3], carry[4], sum[3]);
 qprint(sum & carry[4],7);
 // Expected output
 // 7 | 18 >
+
+// Uncompute these qubits so that we can reuse this module in other modules
+halfadder(s3, c3, carry[3], carry[4], sum[3]);
+halfadder(s2, c2, carry[2], carry[3], sum[2]);
+halfadder(s1, c1, carry[1], carry[2], sum[1]);
+halfadder(s0, c0, carry[0], carry[1], sum[0]);
+
+qprints(carry, "carry=");
+qprints(sum, "sum=");
