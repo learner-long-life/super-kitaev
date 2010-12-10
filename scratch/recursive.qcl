@@ -1,0 +1,30 @@
+// We are just testing here whether QCL supports recursive quantum functions
+
+// Recursive function to compute factorial
+// Functions can only depend on quconst
+int factorial(int n, quconst q) {
+	// Operator calls not allowed within functions
+	// Mix(q[n]);
+	if (n == 0) {
+		return 1;
+	}
+	else {
+		return n*factorial(n-1, q);
+	}
+}
+
+qureg a[5];
+int x;
+x = factorial(4, a);
+print "x=",x;
+
+// Now for testing real quantum recursive functions
+procedure mixrecursive(qureg q, int n) {
+	Mix(q[n]);
+	if (n > 0) {
+		mixrecursive(q, n-1);
+	}
+}
+
+mixrecursive(a, 4);
+dump;
