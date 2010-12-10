@@ -3,13 +3,17 @@
 // Applies a one-bit function specified as a two-qubit (two-row) table
 // Assumes that output starts out as 0
 procedure applyfunction(qureg table, qureg in, qureg output) {
-	qprint(table, 8);
+	//qprints(table, "table=");
 	// Flip input so we can apply the zero case
 	Not(in);
-	qprint(in, 9);
+	//qprints(in, "in=");
+	//qprints(table[0], "table[0]=");
+	//qprints(output, "output=");
 	Toffoli(output, table[0], in);
+	//qprints(output, "output=");
 	// Flip back the input so we can apply the one case
 	Not(in);
 	Toffoli(output, table[1], in);
-	qprint(table[1], 10);
+	//qprints(output, "output=");
+	//qprints(table[1], "table[1]=");
 }
