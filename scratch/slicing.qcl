@@ -1,0 +1,13 @@
+// Scratch file to test quantum register slicing
+
+qureg a[10];
+
+print a;
+
+qureg b = a[0..2];
+
+print b;
+
+qureg c = a[2..3];
+
+print c;
