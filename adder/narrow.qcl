@@ -10,8 +10,6 @@ operator Toffoli(qureg q, qureg c1, qureg c2) {
 	          q & c1 & c2);
 }
 
-include "utils/qprint.qcl";
-
 // Now we narrow the tables by a, see circuit on Notes p. 21
 
 operator cnarrowhelper(qureg addend, qureg ancilla) {
@@ -32,12 +30,12 @@ operator snarrowhelper(qureg addend, qureg ancilla) {
 	CNot(ancilla[1], addend);
 	CNot(ancilla[2], addend);
 }
-	
-procedure snarrow(qureg s, qureg a, qureg b, qureg scratch) {
+
+operator snarrow(qureg s, qureg a, qureg b, qureg scratch) {
 
 	snarrowhelper(a, scratch);
 
-	qprint(scratch, 5);
+	//qprint(scratch, 5);
 	
 	Not(b);
 	Toffoli(s[0], b, scratch[0]);
@@ -46,19 +44,17 @@ procedure snarrow(qureg s, qureg a, qureg b, qureg scratch) {
 	Toffoli(s[0], b, scratch[2]);
 	Toffoli(s[1], b, scratch[3]);
 
-	qprint(s, 6);
+	//qprint(s, 6);
 	
 	!snarrowhelper(a, scratch);
 }
 
-procedure cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
+operator cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
 	
 	// a narrowed into scratch
 	cnarrowhelper(a, scratch);
 	
-	qprint(scratch,3);
-	// Expected output
-	// 3 | 14 > 
+	//qprint(scratch,3);
 	
 	// Now we narrow by b0 into c0
 	// Flip b[0] so we can take negative-CCNOT
@@ -70,13 +66,36 @@ procedure cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
 	Toffoli(c[0], scratch[2], b);
 	Toffoli(c[1], scratch[3], b);
 	
-	qprint(c,4);
-	// Expected output, since we generate a carry bit no matter what
-	// 4 | 3 >
+	//qprint(c,4);
 	
 	// Now we un-narrow a and b to free up scratch space
 	!cnarrowhelper(a, scratch);
 	
-	qprint(scratch,0);
+	//qprint(scratch,0);
 	
+}
+
+operator addernarrow(qureg sarray, qureg carray, qureg aarray, qureg barray,
+	qureg scratch) {
+	int n = #aarray;
+	int i;
+	int j;
+	for i=0 to n-1 {
+		j = i*2;
+		cnarrow(carray[j..j+1], aarray[i], barray[i], scratch);
+		snarrow(sarray[j..j+1], aarray[i], barray[i], scratch);
+	}
+}
+
+include "adder/apply.qcl";
+
+// This performs addition at one bit position given a carry in, and
+// computes a carry out
+procedure halfadder(qureg sumtable, qureg carrytable, qureg carryin,
+	qureg carryout, qureg sumout) {
+	
+	// Compute the sum given the carryin
+	applyfunction(sumtable, carryin, sumout);
+	// Compute the carry out given the carry in
+	applyfunction(carrytable, carryin, carryout);
 }
