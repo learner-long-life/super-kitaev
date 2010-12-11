@@ -1,0 +1,64 @@
+include "utils/toffoli.qcl";
+
+// Common procedures and operators for composing function tables
+
+// Compose the function tables given in test-narrow.qcl
+
+// Note that we should have a special compose2table function optimize for
+// the case of c_in = 0, such as all Fi,0 functions
+// Procedure to compose two 2-line function tables into a new 2-line table
+operator compose2table(qureg newtable, qureg table1, qureg table2) {
+	//qprints(table1, "Table1=");
+	//qprints(table2, "Table2=");
+
+	// The one-ness of table2 is transferred to newtable based on the
+	// one-nesses of table1
+	Toffoli(newtable[0], table1[0], table2[1]);
+	Toffoli(newtable[1], table1[1], table2[1]);
+	
+	// Flip table1 bits so we can control on the zero-ness
+	Not(table1[0]);
+	Not(table1[1]);
+	
+	Toffoli(newtable[0], table1[0], table2[0]);
+	Toffoli(newtable[1], table1[1], table2[0]);
+
+	// Flip table1 bits back for reversibleness
+	Not(table1[0]);
+	Not(table1[1]);
+	
+	//qprints(newtable, "NewTable=");
+}
+
+// Composes pairs of neighboring function tables within a layer
+// m is the number of function table pairs to compose together
+// (must be power of 2)
+// e.g. if n=8, then in the first layer, we are composing m=4 pairs together
+operator composeTableHelper(qureg tables, int tableStart, int m) {
+	int i; // loop index over pairs of function tables
+	int j; // offset by table start and multiply times two
+	int k; // table start index for new composed functions
+	k = tableStart + 4*m;
+	for i = 0 to m-1 {
+		j = tableStart + (4*i);
+		compose2table(tables[k..k+1],tables[j..j+1],tables[j+2..j+3]);
+		k = k + 2;
+	}
+}
+
+operator composeTables(qureg tables, int l) {
+	int n = 2^l;
+	int m;
+	int i; // loop index for layers
+	int start = 0; // lowest layer starts at 0
+	int l1; // invert the index from l downto 1
+	for i=0 to l-1 {
+		l1 = l-i-1;
+		m = 2^l1;
+		print "m= ", m;
+		print "l1= ", l1;
+		print "start= ", start;
+		composeTableHelper(tables, start, m);
+		start = start + 4*m;
+	}
+}

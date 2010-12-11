@@ -1,32 +1,7 @@
 include "adder/test-narrow.qcl";
+include "adder/compose.qcl";
 
 // Compose the function tables given in test-narrow.qcl
-
-// Note that we should have a special compose2table function optimize for
-// the case of c_in = 0, such as all Fi,0 functions
-// Procedure to compose two 2-line function tables into a new 2-line table
-operator compose2table(qureg newtable, qureg table1, qureg table2) {
-	//qprints(table1, "Table1=");
-	//qprints(table2, "Table2=");
-
-	// The one-ness of table2 is transferred to newtable based on the
-	// one-nesses of table1
-	Toffoli(newtable[0], table1[0], table2[1]);
-	Toffoli(newtable[1], table1[1], table2[1]);
-	
-	// Flip table1 bits so we can control on the zero-ness
-	Not(table1[0]);
-	Not(table1[1]);
-	
-	Toffoli(newtable[0], table1[0], table2[0]);
-	Toffoli(newtable[1], table1[1], table2[0]);
-
-	// Flip table1 bits back for reversibleness
-	Not(table1[0]);
-	Not(table1[1]);
-	
-	//qprints(newtable, "NewTable=");
-}
 
 // Composed function tables
 qureg F10[2];

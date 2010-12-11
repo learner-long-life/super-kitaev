@@ -1,0 +1,48 @@
+include "adder/compose.qcl";
+include "utils/qprint.qcl";
+
+// Let n=8, l=3, and therefore we need ((2^4)-1) * 2 qubits to store all
+// function table lines
+qureg tables[30];
+
+// Let's make it interesting by inserting some ones
+Not(tables[0]);
+Not(tables[2]);
+Not(tables[4]);
+Not(tables[7]);
+Not(tables[9]);
+Not(tables[11]);
+Not(tables[13]);
+Not(tables[14]);
+qprints(tables[0..1],"tables[0..1]= ");
+qprints(tables[2..3],"tables[2..3]= ");
+qprints(tables[4..5],"tables[4..5]= ");
+qprints(tables[6..7],"tables[6..7]= ");
+qprints(tables[8..9],"tables[8..9]= ");
+qprints(tables[10..11],"tables[10..11]= ");
+qprints(tables[12..13],"tables[12..13]= ");
+qprints(tables[14..15],"tables[14..15]= ");
+// Expected outputs
+// tables[0..1]=   | 1 > 
+// tables[2..3]=   | 1 > 
+// tables[4..5]=   | 1 > 
+// tables[6..7]=   | 2 > 
+// tables[8..9]=   | 2 > 
+// tables[10..11]= | 2 > 
+// tables[12..13]= | 2 > 
+// tables[14..15]= | 1 > 
+
+composeTables(tables, 3);
+
+print "***";
+qprints(tables[16..17],"tables[16..17]= ");
+qprints(tables[18..19],"tables[18..19]= ");
+qprints(tables[20..21],"tables[20..21]= ");
+qprints(tables[22..23],"tables[22..23]= ");
+
+print "***";
+qprints(tables[24..25],"tables[24..25]= ");
+qprints(tables[26..27],"tables[26..27]= ");
+
+print "***";
+qprints(tables[28..29],"tables[28..29]= ");
