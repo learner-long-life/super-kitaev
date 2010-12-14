@@ -1,0 +1,86 @@
+// Test for Kitaev encoded adder
+
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+
+// We store three 4-bit numbers to add in a and b and c
+qureg a[4];
+qureg b[4];
+qureg c[4];
+qureg scratch[2];
+qureg u[4];
+qureg u2[1];
+qureg v[4];
+qureg v2[1];
+
+// Fill the values of a and b, 0-based indexing
+// a = 0b 1011 = 11
+Not(a[3]);
+Not(a[1]);
+Not(a[0]);
+qprints(a, "a= ");
+
+// b = 0b 0111 = 7
+Not(b[2]);
+Not(b[1]);
+Not(b[0]);
+qprints(b, "b= ");
+
+// c = 0b 1001 = 9
+Not(c[3]);
+Not(c[0]);
+qprints(c, "c= ");
+
+// From diagrams on p. 28 of notes
+procedure encodedU(qureg ai, qureg bi, qureg ci, qureg scratch, qureg ui) {
+	Toffoli(scratch, bi, ci);
+	//qprints(scratch, "bi ci = ");
+	CNot(ci, bi);
+	Toffoli(ui, ai, ci);
+	//qprints(ui, "ai( bi XOR ci) = ");
+	// In parallel!
+	CNot(ci, bi); // to uncompute above and restore ci
+	CNot(ui, scratch);
+	// Now ui contains (bi ci) XOR ai(bi XOR CI)
+	Toffoli(scratch, bi, ci); // uncompute above and restore scratch to 0
+}
+
+encodedU(a[0], b[0], c[0], scratch[0], u[0]);
+qprints(u[0], "u[0]= " );
+encodedU(a[1], b[1], c[1], scratch[0], u[1]);
+qprints(u[1], "u[1]= " );
+encodedU(a[2], b[2], c[2], scratch[0], u[2]);
+qprints(u[2], "u[2]= " );
+encodedU(a[3], b[3], c[3], scratch[0], u[3]);
+qprints(u[3], "u[3]= " );
+
+procedure encodedV(qureg ai, qureg bi, qureg ci, qureg scratch, qureg vi) {
+	// In parallel!
+	Not(ai);
+	CNot(ci, bi);
+	// scratch = \bar{ai} (bi XOR ci)
+	Toffoli(scratch, ai, ci);
+	// In parallel! Flip back ai
+	Not(ai);
+	Not(ci);
+	// vi = ai (\bar{bi XOR ci})
+	Toffoli(vi, ai, ci);
+	// In parallel!
+	Not(ai);
+	Not(ci);
+	CNot(vi, scratch); // vi = ai (\bar{bi XOR ci}) XOR \bar{ai}(bi XOR ci)
+	// Uncompute scratch back to 0
+	Toffoli(scratch, ai, ci);
+	// In parallel! Uncompute
+	Not(ai);
+	CNot(ci, bi);
+}
+
+encodedV(a[0], b[0], c[0], scratch[0], v[0]);
+qprints(v[0], "v[0]= " );
+encodedV(a[1], b[1], c[1], scratch[0], v[1]);
+qprints(v[1], "v[1]= " );
+encodedV(a[2], b[2], c[2], scratch[0], v[2]);
+qprints(v[2], "v[2]= " );
+encodedV(a[3], b[3], c[3], scratch[0], v[3]);
+qprints(v[3], "v[3]= " );
