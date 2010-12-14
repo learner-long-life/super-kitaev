@@ -1,0 +1,48 @@
+// From diagrams on p. 28 of notes
+procedure encodedU(qureg ai, qureg bi, qureg ci, qureg scratch, qureg ui) {
+	Toffoli(scratch, bi, ci);
+	//qprints(scratch, "bi ci = ");
+	CNot(ci, bi);
+	Toffoli(ui, ai, ci);
+	//qprints(ui, "ai( bi XOR ci) = ");
+	// In parallel!
+	CNot(ci, bi); // to uncompute above and restore ci
+	CNot(ui, scratch);
+	// Now ui contains (bi ci) XOR ai(bi XOR CI)
+	Toffoli(scratch, bi, ci); // uncompute above and restore scratch to 0
+}
+
+procedure encodedV(qureg ai, qureg bi, qureg ci, qureg scratch, qureg vi) {
+	// In parallel!
+	Not(ai);
+	CNot(ci, bi);
+	// scratch = \bar{ai} (bi XOR ci)
+	Toffoli(scratch, ai, ci);
+	// In parallel! Flip back ai
+	Not(ai);
+	Not(ci);
+	// vi = ai (\bar{bi XOR ci})
+	Toffoli(vi, ai, ci);
+	// In parallel!
+	Not(ai);
+	Not(ci);
+	CNot(vi, scratch); // vi = ai (\bar{bi XOR ci}) XOR \bar{ai}(bi XOR ci)
+	// Uncompute scratch back to 0
+	Toffoli(scratch, ai, ci);
+	// In parallel! Uncompute
+	Not(ai);
+	CNot(ci, bi);
+}
+
+procedure encodedadd(qureg a, qureg b, qureg c, qureg scratch, qureg u,
+	qureg v) {
+	int n = #a;
+	int i;
+	for i=0 to n-1 {
+		// u is shifted up by one bit because it is MSB
+		encodedU(a[i], b[i], c[i], scratch, u[i+1]);
+		//qprints(u[i], "u[i]= " );
+		encodedV(a[i], b[i], c[i], scratch, v[i]);
+		//qprints(v[i], "v[i]= " );
+	}
+}
