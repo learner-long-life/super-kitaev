@@ -1,3 +1,5 @@
+// Test for top-level call to Kitaev parallel adding
+
 include "utils/qprint.qcl";
 include "utils/toffoli.qcl";
 include "adder/narrow.qcl";
@@ -11,15 +13,7 @@ qureg b[4];
 qureg scratch[4];
 // Registers for narrowed carry tables
 qureg ctables[2*7];
-qureg c0 = ctables[0..1];
-qureg c1 = ctables[2..3];
-qureg c2 = ctables[4..5];
-qureg c3 = ctables[6..7];
 qureg stables[2*4];
-qureg s0 = stables[0..1];
-qureg s1 = stables[2..3];
-qureg s2 = stables[4..5];
-qureg s3 = stables[6..7];
 
 qureg carry[5];
 qureg sum[4];
