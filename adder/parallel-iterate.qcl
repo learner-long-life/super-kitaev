@@ -2,7 +2,7 @@
 // k is the interval size between iterations in a layer
 // n is the total number of iterations to parallelize
 // This follows the diagram on p. 46
-procedure parallelIterateHelper(qureg tables, qureg states, int tableStart,
+operator parallelIterateHelper(qureg tables, qureg states, int tableStart,
 	int k, int n) {
 	int p;
 	int i; // loop index over intervals in a level
@@ -17,27 +17,45 @@ procedure parallelIterateHelper(qureg tables, qureg states, int tableStart,
 
 	for i = 0 to p-1 {
 		j = tableStart + 4*i;
-		print "j=",j;
-		print "q=",q;
+		//print "j=",j;
+		//print "q=",q;
 		applyfunction(tables[j..j+1], states[q], states[q+k]);
 		q = q + (2*k);
 	}
 }
 
 // l = number of layers of parallel iteration, where n = 2^l
+// starti is the layer to start with (normally 0)
+//   can be 1 if we are uncomputing and want to leave the high carry bit
 // Follows the development on p. 48
-procedure parallelIterate(qureg tables, qureg states, int l) {
+operator parallelIterate(qureg tables, qureg states, int l) {
 	int n = 2^l;
 	int tableStart = (2^(l+1)) - 2;
 	int l1; // invert the layer l
 	int i; // index to loop over layers
 	int k; // successive intervals in each layer, power of two
 
-	print "tableStart= ", tableStart;
+	//print "tableStart= ", tableStart;
 	for i=0 to l {
 		l1 = l - i;
 		k = 2^l1;
 		parallelIterateHelper(tables, states, tableStart*2, k, n);
+		tableStart = tableStart - (2^(i+1));
+	}
+}
+
+operator parallelUnIterate(qureg tables, qureg states, int l) {
+	int n = 2^l;
+	int tableStart = (2^(l+1)) - 6;
+	int i; // index to loop over layers
+	int k; // successive intervals in each layer, power of two
+
+	//print "tableStart= ", tableStart;
+	for i=0 to l-1 {
+		print "i=",i;
+		k = 2^i;
+		parallelIterateHelper(tables, states, tableStart*2, k, n);
+		print "k=",k;
 		tableStart = tableStart - (2^(i+1));
 	}
 }

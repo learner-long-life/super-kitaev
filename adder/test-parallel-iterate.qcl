@@ -87,4 +87,10 @@ qprints(carry, "carry= ");
 parallelIterate(ctables, carry, 2);
 qprints(carry, "carry= ");
 // Expected output
-// carry=  | 0 >
+// carry=  | 30 >
+
+// Test uncomputing it
+parallelUnIterate(ctables, carry, 2);
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 16 >
