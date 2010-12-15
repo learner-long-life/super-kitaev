@@ -1,5 +1,3 @@
-include "utils/toffoli.qcl";
-
 // Common procedures and operators for composing function tables
 
 // Compose the function tables given in test-narrow.qcl
