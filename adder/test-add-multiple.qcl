@@ -1,0 +1,112 @@
+// Test for adding multiple numbers, combining Kitaev encoded/parallel adding
+
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/encoded.qcl";
+include "adder/narrow.qcl";
+include "adder/compose.qcl";
+include "adder/parallel-iterate.qcl";
+include "adder/parallel-add.qcl";
+
+// Qubits for encoded adder
+qureg zero[1]; // dedicated zero register
+qureg a[8];
+qureg b[8];
+qureg c[8];
+qureg d[8];
+
+ // we only need 1 scratch qubit for the encoded adder, but 4 for parallel adder
+qureg scratch[4];
+qureg u[9];
+qureg v[8];
+// Second scratch numbers to swap out with u and v
+qureg w[9];
+qureg x[8];
+
+// Qubits for parallel adder
+// Registers for narrowed carry tables
+qureg ctables[2*15];
+qureg stables[2*8];
+
+qureg carry[9];
+qureg sum[8];
+qureg total = sum & carry[8];
+
+// Fill the values of a and b, 0-based indexing
+// a = 0b 1011 = 0d 11
+Not(a[3]);
+Not(a[1]);
+Not(a[0]);
+
+qprints(a, "a= ");
+
+// b = 0b 0101 = 0d 5
+Not(b[0]);
+Not(b[2]);
+qprints(b, "b= ");
+
+// c = 0b 1001 = 0d 9
+Not(c[0]);
+Not(c[3]);
+qprints(c, "c= ");
+
+// d = 0b 1101 = 0d 13
+Not(d[0]);
+Not(d[2]);
+Not(d[3]);
+qprints(d, "d= ");
+
+// Reduce this encoded add of 3 numbers to 2 numbers
+// In particular this is useful b/c one of the 3 numbers will be a one
+// to complete the two's complement of b
+// Add one to the complement of a to get its negative
+encodedadd(a, b, c, scratch[0], u[1..8], v);
+
+qprints(u, "u=");
+qprints(v, "v=");
+// Expected output:
+// a=  | 11 > 
+// b=  | 5 > 
+// c=  | 9 > 
+// d=  | 13 >
+
+// 11+5+9 = 25 = 18+7
+// u= | 18 > 
+// v= | 7 > 
+
+// And again! 3 to 2
+// In particular this is useful b/c one of the 3 numbers will be a one
+// to complete the two's complement of b
+// Add one to the complement of a to get its negative
+encodedadd(u[0..7], v, d, scratch[0], w[1..8], x);
+
+qprints(w, "w=");
+qprints(x, "x=");
+// Expected output:
+// w= | 14 > 
+// x= | 24 > 
+// 25 + 13 = 38 = 14 + 24
+
+// Now uncompute u and v back to zero, we can use this like a reciprocating saw
+// okay, i don't really know what a reciprocating saw does
+// but I imagine it goes back and forth and cuts through numbers to be added
+// like hot butter
+encodedadd(a, b, c, scratch[0], u[1..8], v);
+qprints(u, "u=");
+qprints(v, "v=");
+// Expected output
+// u= | 0 > 
+// v= | 0 > 
+
+// Now use parallel add to make it one number
+// For 4-bit numbers, l=2
+parallelAdd(stables, ctables, w[0..7], x, 3, scratch, carry, sum);
+
+qprints(stables, "stables= ");
+// Expected output: |0>
+qprints(ctables, "ctables= ");
+// Expected output: |0>
+qprints(sum, "sum= ");
+// Expected output: |18>
+qprints(scratch, "scratch= ");
+// Expected output: |0>
