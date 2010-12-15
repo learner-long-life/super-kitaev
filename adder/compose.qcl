@@ -60,3 +60,20 @@ operator composeTables(qureg tables, int l) {
 		start = start + 4*m;
 	}
 }
+
+operator unComposeTables(qureg tables, int l) {
+	int n = 2^l;
+	int m;
+	int i; // loop index for layers
+	 // highest layer starts at 2^(l+1)-3, b/c we start uncomputing from
+	 // the next-to-highest layer
+	int start = 2^(l+1) - 4; // not -3 b/c of 0-based indexing
+	int l1; // invert the index from l downto 1
+	for i=0 to l-1 {
+		m = 2^i;
+		print "m= ", m;
+		print "start= ", start;
+		composeTableHelper(tables, start*2, m);
+		start = start - 4*m;
+	}
+}
