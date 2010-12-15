@@ -30,7 +30,7 @@ operator parallelIterateHelper(qureg tables, qureg states, int tableStart,
 // Follows the development on p. 48
 operator parallelIterate(qureg tables, qureg states, int l) {
 	int n = 2^l;
-	int tableStart = (2^(l+1)) - 2;
+	int tableStart = (2^(l+1)) - 2; // not -1 b/c of 0-based indexing
 	int l1; // invert the layer l
 	int i; // index to loop over layers
 	int k; // successive intervals in each layer, power of two
