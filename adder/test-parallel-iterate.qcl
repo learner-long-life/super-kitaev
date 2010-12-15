@@ -69,4 +69,21 @@ qprints(carry, "carry= ");
 // Expected output
 // carry=  | 30 >
 
-qprints(scratch, "scratch= ");
+// Okay, hardcoded reset of the carry bits so we can test out top-level
+// parallelIterate
+
+Not(carry[4]);
+Not(carry[3]);
+Not(carry[2]);
+Not(carry[1]);
+
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 0 >
+
+// Now test the top-level parallelIterate
+// l = 2 = log2(n=4)
+parallelIterate(ctables, carry, 2);
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 0 >
