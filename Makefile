@@ -7,6 +7,7 @@ all: \
 	test-parallel-iterate		\
 	test-parallel-add			\
 	test-subtract				\
+	test-subtract-encoded		\
 
 test-narrow:
 	qcl -b 37 adder/test-narrow.qcl
@@ -31,3 +32,6 @@ test-parallel-add:
 
 test-subtract:
 	qcl -b 43 adder/test-subtract.qcl
+
+test-subtract-encoded:
+	qcl -b 109 adder/test-subtract-encoded.qcl

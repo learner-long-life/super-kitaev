@@ -1,0 +1,80 @@
+// Test subtraction for Kitaev encoded numbers
+
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/encoded.qcl";
+include "adder/narrow.qcl";
+include "adder/compose.qcl";
+include "adder/parallel-iterate.qcl";
+include "adder/parallel-add.qcl";
+
+// Qubits for encoded adder
+qureg zero[1]; // dedicated zero register
+qureg a[8];
+qureg b[8];
+qureg one[8]; // dedicated one register
+
+ // we only need 1 scratch qubit for the encoded adder, but 4 for parallel adder
+qureg scratch[4];
+qureg u[9];
+//qureg u2 = zero & u; // shift u by one bit up
+qureg v[8];
+ //pad by a zero MSB bit to line up with u2 and power-of-two boundary
+//qureg v2 = v & zero & zero & zero & zero;
+
+// Qubits for parallel adder
+// Registers for narrowed carry tables
+qureg ctables[2*15];
+qureg stables[2*8];
+
+qureg carry[9];
+qureg sum[8];
+qureg total = sum & carry[8];
+
+// Flip the LSB of the one register
+Not(one[0]); // there, now it's one
+
+
+// Fill the values of a and b, 0-based indexing
+// a = 0b 1011 = 0d 11
+Not(a[3]);
+Not(a[1]);
+Not(a[0]);
+
+qprints(a, "a= ");
+
+// b = 0b 0101 = 0d 5
+Not(b[0]);
+Not(b[2]);
+
+// Flip b, and then we'll add one to it below to make it -b
+Not(b);
+qprints(b, "b= ");
+
+// Reduce this encoded add of 3 numbers to 2 numbers
+// In particular this is useful b/c one of the 3 numbers will be a one
+// to complete the two's complement of b
+// Add one to the complement of a to get its negative
+encodedadd(a, b, one, scratch[0], u[1..8], v);
+
+qprints(u, "u=");
+qprints(v, "v=");
+// Expected output:
+// a=  | 4 > 
+// b=  | 5 > 
+// c=  | 9 > 
+// u= | 10 > 
+// v= | 8 > 
+
+// Now use parallel add to make it one number
+// For 4-bit numbers, l=2
+parallelAdd(stables, ctables, u[0..7], v, 3, scratch, carry, sum);
+
+qprints(stables, "stables= ");
+// Expected output: |0>
+qprints(ctables, "ctables= ");
+// Expected output: |0>
+qprints(sum, "sum= ");
+// Expected output: |18>
+qprints(scratch, "scratch= ");
+// Expected output: |0>
