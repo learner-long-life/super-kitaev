@@ -46,16 +46,18 @@ operator parallelIterate(qureg tables, qureg states, int l) {
 
 operator parallelUnIterate(qureg tables, qureg states, int l) {
 	int n = 2^l;
-	int tableStart = (2^(l+1)) - 6;
+	int tableStart = 0;
 	int i; // index to loop over layers
+	int l1; // invert the layer l
 	int k; // successive intervals in each layer, power of two
 
 	//print "tableStart= ", tableStart;
 	for i=0 to l-1 {
+		l1 = l-i;
 		print "i=",i;
 		k = 2^i;
 		parallelIterateHelper(tables, states, tableStart*2, k, n);
 		print "k=",k;
-		tableStart = tableStart - (2^(i+1));
+		tableStart = tableStart + (2^(l1));
 	}
 }
