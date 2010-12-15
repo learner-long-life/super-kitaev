@@ -1,5 +1,6 @@
-include "adder/compose.qcl";
 include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/compose.qcl";
 
 // Let n=8, l=3, and therefore we need ((2^4)-1) * 2 qubits to store all
 // function table lines
