@@ -5,14 +5,13 @@ include "utils/toffoli.qcl";
 include "adder/encoded.qcl";
 
 // We store three 4-bit numbers to add in a and b and c
+qureg zero[1]; // dedicated zero register, read-only
 qureg a[4];
 qureg b[4];
 qureg c[4];
 qureg scratch[1];
-qureg u[5];
-qureg u2[1];
+qureg u[4];
 qureg v[4];
-qureg v2[1];
 
 // Fill the values of a and b, 0-based indexing
 // a = 0b 1011 = 11
@@ -33,5 +32,11 @@ Not(c[0]);
 qprints(c, "c= ");
 
 encodedadd(a, b, c, scratch, u, v);
-qprints(u, "u=");
+qprints(zero & u, "u=");
 qprints(v, "v=");
+// Expected output:
+// a=  | 11 > 
+// b=  | 7 > 
+// c=  | 9 > 
+// u= | 22 > 
+// v= | 5 > 

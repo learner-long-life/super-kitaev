@@ -39,8 +39,9 @@ procedure encodedadd(qureg a, qureg b, qureg c, qureg scratch, qureg u,
 	int n = #a;
 	int i;
 	for i=0 to n-1 {
-		// u is shifted up by one bit because it is MSB
-		encodedU(a[i], b[i], c[i], scratch, u[i+1]);
+		// u should be shifted up by one bit because it is MSB
+		// but we'll do that in the caller, using a dedicated zero register
+		encodedU(a[i], b[i], c[i], scratch, u[i]);
 		//qprints(u[i], "u[i]= " );
 		encodedV(a[i], b[i], c[i], scratch, v[i]);
 		//qprints(v[i], "v[i]= " );
