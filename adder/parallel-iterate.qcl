@@ -1,0 +1,28 @@
+// Apply function tables in parallel in a single layer
+// k is the interval size between iterations in a layer
+// n is the total number of iterations to parallelize
+// This follows the diagram on p. 46
+procedure parallelIterateHelper(qureg tables, qureg states, int tableStart,
+	int k, int n) {
+	int p;
+	int i; // loop index over intervals in a level
+	int j; // offset into tables to apply
+	int q = 0; // offset into states to use for input
+	
+	if (k == n) {
+		p = 1; // handle special case of top-level q0 -> qn
+	} else {
+		p = n / (2*k); // the number of intervals of size k in n
+	}
+
+	for i = 0 to p-1 {
+		j = tableStart + 4*i;
+		print "j=",j;
+		print "q=",q;
+		applyfunction(tables[j..j+1], states[q], states[q+k]);
+		q = q + (2*k);
+	}
+}
+
+procedure parallelIterate(qureg tables, int l) {
+}

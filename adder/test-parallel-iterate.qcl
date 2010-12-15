@@ -1,0 +1,72 @@
+include "utils/qprint.qcl";
+include "adder/narrow.qcl";
+include "adder/compose.qcl";
+include "adder/parallel-iterate.qcl";
+
+// We store two 4-bit numbers to add in a and b
+qureg a[4];
+qureg b[4];
+qureg scratch[4];
+// Registers for narrowed carry tables
+qureg ctables[2*7];
+qureg c0 = ctables[0..1];
+qureg c1 = ctables[2..3];
+qureg c2 = ctables[4..5];
+qureg c3 = ctables[6..7];
+qureg stables[2*4];
+qureg s0 = stables[0..1];
+qureg s1 = stables[2..3];
+qureg s2 = stables[4..5];
+qureg s3 = stables[6..7];
+
+qureg carry[5];
+qureg sum[4];
+
+// Fill the values of a and b, 0-based indexing
+// a = 0b 1011 = 11
+Not(a[3]);
+Not(a[1]);
+Not(a[0]);
+// b = 0b 0111 = 7
+Not(b[2]);
+Not(b[1]);
+Not(b[0]);
+
+// positions 0 and 1 generate a carry bit no matter what
+// position 2 propagates a carry bit
+// position 3 propagates a carry bit
+
+// position 0 sums to 0 no matter what
+// position 1 sums to 0 if c_i = 0 and 1 otherwise
+// positions 2 and 3 sums to 1 if c_i = 0 and 0 otherwise
+
+qprint(a,1);
+qprint(b,2);
+// Expected output
+// 1 | 11 > 
+// 2 | 7 > 
+
+// Narrow adder tables
+addernarrow(stables, ctables, a, b, scratch);
+
+// Compose ctables, in 2 levels (4 = 2^2)
+composeTables(ctables, 2);
+
+// Follow development on p. 47 of notes
+parallelIterateHelper(ctables, carry, 4*2, 2, 4);
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 4 >
+
+parallelIterateHelper(ctables, carry, 0*2, 1, 4);
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 14 >
+
+// Special case of q0 -> q4
+parallelIterateHelper(ctables, carry, 6*2, 4, 4);
+qprints(carry, "carry= ");
+// Expected output
+// carry=  | 30 >
+
+qprints(scratch, "scratch= ");
