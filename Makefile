@@ -8,6 +8,7 @@ all: \
 	test-parallel-add			\
 	test-subtract				\
 	test-subtract-encoded		\
+	test-subtract-encoded-n2	\
 	test-add-multiple			\
 
 test-narrow:
@@ -36,6 +37,9 @@ test-subtract:
 
 test-subtract-encoded:
 	qcl -b 109 adder/test-subtract-encoded.qcl
+
+test-subtract-encoded-n2:
+	qcl -b 31 adder/test-subtract-encoded-n2.qcl
 
 test-add-multiple:
 	qcl -b 134 adder/test-add-multiple.qcl
