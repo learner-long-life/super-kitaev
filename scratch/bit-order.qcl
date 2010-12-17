@@ -1,0 +1,27 @@
+// Test bit slicing in passing to procedures
+qureg a[3];
+
+// Make a[1] 1 and a[0] 0
+Not(a[1]);
+
+procedure negatebits(qureg q) {
+	// Is this relative index 0, or absolute?
+	Not(q[0]);
+}
+
+dump;
+// Expected output
+// |2>
+
+negatebits(a[0..1]);
+
+dump;
+// Expected output
+// |3>
+
+negatebits(a[1..2]);
+
+dump;
+// Expected output
+// |1>
+// b/c bit indices inside procedures are relative to the qureg slice passed in
