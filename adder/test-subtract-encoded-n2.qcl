@@ -28,8 +28,12 @@ qureg carry[3];
 qureg sum[2];
 qureg total = sum & carry[2];
 
+dump;
+
 // Flip the LSB of the one register
+print "one= ",one;
 Not(one[0]); // there, now it's one
+dump;
 
 
 // Fill the values of a and b, 0-based indexing
@@ -37,29 +41,35 @@ Not(one[0]); // there, now it's one
 Not(a[1]);
 Not(a[0]);
 
-qprints(a, "a= ");
+print "a= ", a;
+dump;
+//qprints(a, "a= ");
 
-// b = 0b 01 = 0d 1
-Not(b[0]);
+// Mix b
+Mix(b);
+dump;
 
 // Flip b, and then we'll add one to it below to make it -b
 Not(b);
-qprints(b, "b= ");
+print "b= ", b;
+dump;
+//qprints(b, "b= ");
 
 // Reduce this encoded add of 3 numbers to 2 numbers
 // In particular this is useful b/c one of the 3 numbers will be a one
 // to complete the two's complement of b
 // Add one to the complement of a to get its negative
 encodedadd(a, b, one, scratch[0], u[1..2], v);
-
-qprints(u, "u=");
-qprints(v, "v=");
+print "u= ",u;
+print "v= ",v;
+dump;
+//qprints(u, "u=");
+//qprints(v, "v=");
 // Expected output:
-// a=  | 4 > 
-// b=  | 5 > 
-// c=  | 9 > 
-// u= | 10 > 
-// v= | 8 > 
+// a=  | 3 > 
+// b=  | 2 > 
+// u= | 6 > 
+// v= | 0 >
 
 // Now use parallel add to make it one number
 // For 2-bit numbers, l=1
@@ -69,7 +79,9 @@ qprints(stables, "stables= ");
 // Expected output: |0>
 qprints(ctables, "ctables= ");
 // Expected output: |0>
-qprints(sum, "sum= ");
-// Expected output: |18>
+print "sum=",sum;
+dump;
+//qprints(sum, "sum= ");
+// Expected output: |2>
 qprints(scratch, "scratch= ");
 // Expected output: |0>
