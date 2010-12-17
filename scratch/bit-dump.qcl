@@ -1,0 +1,33 @@
+// Test dumping and bit orders
+qureg a[2];
+qureg b[2];
+qureg one[2];
+
+print "a= ",a;
+print "b= ",b;
+// Expected output
+// a=  <0,1> 
+// b=  <2,3> 
+dump;
+// Expected output
+// |0x00>
+
+print "one= ",one;
+// Expected output
+// one=  <4,5>
+
+dump;
+// Expected output
+// |0x00>
+
+Not(one[0]);
+
+dump;
+// Expected output
+// |0x10>
+
+Not(one[0]);
+
+dump;
+// Expected output
+// |0x00>

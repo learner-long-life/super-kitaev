@@ -10,6 +10,8 @@ all: \
 	test-subtract-encoded		\
 	test-subtract-encoded-n2	\
 	test-add-multiple			\
+	test-copy-n2				\
+	scratch-bit-dump			\
 
 test-narrow:
 	qcl -b 37 adder/test-narrow.qcl
@@ -43,4 +45,9 @@ test-subtract-encoded-n2:
 
 test-add-multiple:
 	qcl -b 134 adder/test-add-multiple.qcl
-	
+
+test-copy-n2:
+	qcl -b 133 magic-state/test-copy-n2.qcl
+
+scratch-bit-dump:
+	qcl -f x scratch/bit-dump.qcl
