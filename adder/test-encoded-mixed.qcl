@@ -1,0 +1,43 @@
+// Test for Kitaev encoded adder
+
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/encoded.qcl";
+
+// We store three 4-bit numbers to add in a and b and c
+qureg zero[1]; // dedicated zero register, read-only
+qureg a[2];
+qureg b[2];
+qureg c[2];
+qureg scratch[1];
+qureg u[2];
+qureg v[2];
+
+// Fill the values of a and b, 0-based indexing
+// a = b11 = d3
+Not(a[1]);
+Not(a[0]);
+print "a= ",a;
+
+// b = 0b 0111 = 7
+Mix(b);
+print "b= ",b;
+
+// c = b01 = 1
+Not(c[0]);
+print "c= ",c;
+
+dump;
+// Expected output
+// 0.5 |0x026> + 0.5 |0x02e> + 0.5 |0x036> + 0.5 |0x03e>
+
+encodedadd(a, b, c, scratch, u, v);
+
+print "u= ",u;
+print "v= ",v;
+
+dump;
+// Expected output:
+// 0.5 |0x336> + 0.5 |0x73e> + 0.5 |0x926> + 0.5 |0xd2e>
+
+// These are worked out in p. 56 of my notes.
