@@ -1,0 +1,28 @@
+// Module to implement X (increment mod 2^n operator)
+
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/encoded.qcl";
+include "adder/narrow.qcl";
+include "adder/compose.qcl";
+include "adder/parallel-iterate.qcl";
+include "adder/parallel-add.qcl";
+
+procedure operatorX(qureg A, qureg target, int l) {
+	int n = 2^l;
+	
+	// Qubits for parallel adder
+	qureg scratch[4]; // we always need 4 scratch bits to narrow 2-line tables
+
+	// Registers for narrowed carry tables
+	qureg ctables[2*(2^(l+1)-1)];
+	qureg stables[2*n];
+
+	qureg carry[n+1]; // we actually ignore high carry bit
+	
+	qureg one[n]; // Dedicated register to hold constant 1
+	
+	Not(one[0]);
+	
+	parallelAdd(stables, ctables, A, one, 1, scratch, carry, target);
+}
