@@ -8,7 +8,3 @@ operator CreateOddMagicSuperposition(qureg qdata) {
   Mix(qdata[n-1]); // apply Hadamard to mix most significant bit
   Z(qdata[n-1]);   // apply Z to flip sign on |1>
 }
-
-qureg A[2];
-CreateOddMagicSuperposition(A);
-dump;

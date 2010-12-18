@@ -1,0 +1,16 @@
+// Create a superposition of magic states for odd k
+// \nu on p. 133 [Kitaev,Shen,Vyalyi 2002]
+
+include "magic-state/odd-superpose.qcl";
+include "dft.qcl";
+
+qureg A[2];
+CreateOddMagicSuperposition(A);
+dump;
+// Expected output (this is what's in the book)
+// 0.70711 |0> - 0.70711 |2>
+
+dft(A);
+dump;
+// Expected output (1 and 3 are odd! eh? eh?)
+// 0.70711 |1> + 0.70711 |3>
