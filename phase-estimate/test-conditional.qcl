@@ -1,0 +1,24 @@
+// Test conditional function calls
+
+cond qufunct someProcedure(qureg q) {
+	quconst e = cond;
+	print "#e= ", #e;
+}
+
+qureg A[2];
+qureg B[2];
+
+qucond c;
+
+Not(B[0]);
+Not(B[1]);
+
+c = B[0] and B[1];
+
+if (c) {
+	someProcedure(A);
+}
+
+if (B[0]) {
+	someProcedure(A);
+}
