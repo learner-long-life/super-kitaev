@@ -1,0 +1,79 @@
+include "magic-state/create.qcl";
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/encoded.qcl";
+include "adder/narrow.qcl";
+include "adder/compose.qcl";
+include "adder/parallel-iterate.qcl";
+include "adder/parallel-add.qcl";
+
+// Qubits for encoded adder
+
+ // we only need 1 scratch qubit for the encoded adder, but 4 for parallel adder
+qureg scratch[4];
+qureg u[3];
+qureg v[2];
+
+// Qubits for parallel adder
+// Registers for narrowed carry tables
+qureg ctables[2*3];
+qureg stables[2*2];
+
+qureg carry[3];
+qureg sum[2];
+qureg total = sum & carry[2];
+
+// Qubits for magic states
+qureg one[2];
+qureg A[2];
+qureg B[2];
+int i;
+
+// Create a magic state to copy |\psi_{2,1}>
+CreateMagicState(A, 1);
+dump;
+// Create the easy magic state |\psi_{2,0}>
+CreateMagicState(B, 0);
+dump;
+
+print "A=",A;
+dump A;
+print "B=",B;
+dump B;
+
+// Now copy it using our newfound subtraction skills
+// We are subtracting B from A, got it? A - B
+// oh this is the first time we are adding superpositions
+// I'm so excited, the suspense is killing me
+
+// Negate B
+Not(B);
+
+// Flip the LSB of the one register
+Not(one[0]); // there, now it's one
+print "one= ",one;
+dump one;
+
+encodedadd(A, B, one, scratch[0], u[1..2], v);
+// oh no, i don't know if the edge case of l=1 will work!
+parallelAdd(stables, ctables, u[0..1], v, 1, scratch, carry, sum);
+//qprints(stables, "stables= ");
+// Expected output: |0>
+//qprints(ctables, "ctables= ");
+// Expected output: |0>
+//qprints(sum, "sum= ");
+// Expected output: |??>
+//qprints(scratch, "scratch= ");
+// Expected output: |0>
+print "sum=",sum;
+dump;
+// Expected output (worked out on p. 56 of notes)
+// 0.25 |0x01400080> - 0.25i |0x05800020> - 0.25 |0x09c00180> + 0.25i |0x0d200120> + 0.25 |0x11800020> - 0.25i |0x15c000a0> - 0.25 |0x19200120> + 0.25i |0x1d6001a0> + 0.25 |0x21c00180> - 0.25i |0x25200120> - 0.25 |0x294000c0> + 0.25i |0x2d800060> + 0.25 |0x31200120> - 0.25i |0x356001a0> - 0.25 |0x39800060> + 0.25i |0x3dc000e0>
+
+// uncompute!
+encodedadd(A, B, one, scratch[0], u[1..2], v);
+
+// Flip B back to the way it was before
+Not(B);
+
+// Now both B and sum contains |\psi_{2,1}>
