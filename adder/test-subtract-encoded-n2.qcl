@@ -63,13 +63,8 @@ encodedadd(a, b, one, scratch[0], u[1..2], v);
 print "u= ",u;
 print "v= ",v;
 dump;
-//qprints(u, "u=");
-//qprints(v, "v=");
-// Expected output:
-// a=  | 3 > 
-// b=  | 2 > 
-// u= | 6 > 
-// v= | 0 >
+// Expected output (worked out on p. 56)
+// 0.5 |0x00003036> + 0.5 |0x0000703e> + 0.5 |0x00009026> + 0.5 |0x0000d02e>
 
 // Now use parallel add to make it one number
 // For 2-bit numbers, l=1
@@ -81,7 +76,6 @@ qprints(ctables, "ctables= ");
 // Expected output: |0>
 print "sum=",sum;
 dump;
-//qprints(sum, "sum= ");
-// Expected output: |2>
+
 qprints(scratch, "scratch= ");
 // Expected output: |0>
