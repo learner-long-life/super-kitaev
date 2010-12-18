@@ -1,0 +1,37 @@
+include "utils/toffoli.qcl";
+
+qureg control[2];
+qureg A[1];
+
+dump A;
+// Expected output: (A starts out as |0>)
+// |0>
+
+Not(control[0]);
+Not(control[1]);
+
+if (control) {
+	NToffoli(A);
+}
+
+dump A;
+// Expected output: (A gets flipped because both control bits are true)
+// |1>
+
+if (control) {
+	Not(A);
+}
+
+dump A;
+// Expected output: (A gets flipped back to zero b/c both control bits still true)
+// |0>
+
+Not(control[0]);
+
+if (control) {
+	Not(A);
+}
+
+dump A;
+// Expected output: (A stays zero b/c one control bit is zero)
+// |0>
