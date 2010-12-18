@@ -1,4 +1,4 @@
-include "create.qcl";
+include "magic-state/create.qcl";
 
 qureg A[2];
 int i;
