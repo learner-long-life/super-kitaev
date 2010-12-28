@@ -8,7 +8,7 @@
 // carry is an n+1-qubit register to hold carry bits
 //   carry[n] will hold the high carry bit, which is MSB of the sum
 // sum is an n-qubit register to hold sum bits
-operator parallelAdd(qureg stables, qureg ctables, qureg a, qureg b, int l,
+cond operator parallelAdd(qureg stables, qureg ctables, qureg a, qureg b, int l,
 	qureg scratch, qureg carry, qureg sum) {
 	int i; // index to loop over bit positions
 	int n = 2^l; // number of bits to add

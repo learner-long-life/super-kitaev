@@ -1,6 +1,6 @@
 // Now we narrow the tables by a, see circuit on Notes p. 21
 
-operator cnarrowhelper(qureg addend, qureg ancilla) {
+cond operator cnarrowhelper(qureg addend, qureg ancilla) {
 	CNot(ancilla[1],addend);
 	CNot(ancilla[2],addend);
 	CNot(ancilla[3],addend);
@@ -9,7 +9,7 @@ operator cnarrowhelper(qureg addend, qureg ancilla) {
 	CNot(ancilla[3],addend);
 }
 
-operator snarrowhelper(qureg addend, qureg ancilla) {
+cond operator snarrowhelper(qureg addend, qureg ancilla) {
 	// First toggle the one's of the sum output
 	CNot(ancilla[0], addend);
 	CNot(ancilla[3], addend);
@@ -19,7 +19,7 @@ operator snarrowhelper(qureg addend, qureg ancilla) {
 	CNot(ancilla[2], addend);
 }
 
-operator snarrow(qureg s, qureg a, qureg b, qureg scratch) {
+cond operator snarrow(qureg s, qureg a, qureg b, qureg scratch) {
 
 	snarrowhelper(a, scratch);
 
@@ -37,7 +37,7 @@ operator snarrow(qureg s, qureg a, qureg b, qureg scratch) {
 	!snarrowhelper(a, scratch);
 }
 
-operator cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
+cond operator cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
 	
 	// a narrowed into scratch
 	cnarrowhelper(a, scratch);
@@ -63,7 +63,7 @@ operator cnarrow(qureg c, qureg a, qureg b, qureg scratch) {
 	
 }
 
-operator addernarrow(qureg sarray, qureg carray, qureg aarray, qureg barray,
+cond operator addernarrow(qureg sarray, qureg carray, qureg aarray, qureg barray,
 	qureg scratch) {
 	int n = #aarray;
 	int i;
