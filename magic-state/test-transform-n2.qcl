@@ -1,6 +1,6 @@
 // Tests whether QFT transforms a magic state into computational basis
 
-include "create.qcl";
+include "magic-state/create.qcl";
 include "dft.qcl";
 
 qureg A[2];
