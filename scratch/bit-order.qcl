@@ -1,0 +1,11 @@
+// Test to figure out bit order of state indices
+
+qureg A[4];
+
+// Create a Bell State
+Mix(A[1]);
+CNot(A[0], A[1]);
+
+dump A[0..2];
+// Expected output (LSB first)
+// 0.5 |0>, 0.5 |3>
