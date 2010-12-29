@@ -42,8 +42,6 @@ Not(b[0]);
 
 dump a;
 dump b;
-//qprints(a,"a=");
-//qprints(b,"b=");
 // Expected output
 // 1 | 11 > 
 // 2 | 7 > 

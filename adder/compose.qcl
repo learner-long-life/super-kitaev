@@ -5,7 +5,7 @@
 // Note that we should have a special compose2table function optimize for
 // the case of c_in = 0, such as all Fi,0 functions
 // Procedure to compose two 2-line function tables into a new 2-line table
-operator compose2table(qureg newtable, qureg table1, qureg table2) {
+cond operator compose2table(qureg newtable, qureg table1, qureg table2) {
 	//qprints(table1, "Table1=");
 	//qprints(table2, "Table2=");
 
@@ -32,7 +32,7 @@ operator compose2table(qureg newtable, qureg table1, qureg table2) {
 // m is the number of function table pairs to compose together
 // (must be power of 2)
 // e.g. if n=8, then in the first layer, we are composing m=4 pairs together
-operator composeTableHelper(qureg tables, int tableStart, int m) {
+cond operator composeTableHelper(qureg tables, int tableStart, int m) {
 	int i; // loop index over pairs of function tables
 	int j; // offset by table start and multiply times two
 	int k; // table start index for new composed functions
@@ -44,7 +44,7 @@ operator composeTableHelper(qureg tables, int tableStart, int m) {
 	}
 }
 
-operator composeTables(qureg tables, int l) {
+cond operator composeTables(qureg tables, int l) {
 	int n = 2^l;
 	int m;
 	int i; // loop index for layers
@@ -61,7 +61,7 @@ operator composeTables(qureg tables, int l) {
 	}
 }
 
-operator unComposeTables(qureg tables, int l) {
+cond operator unComposeTables(qureg tables, int l) {
 	int n = 2^l;
 	int m;
 	int i; // loop index for layers

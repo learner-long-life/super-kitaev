@@ -8,7 +8,7 @@ include "adder/compose.qcl";
 include "adder/parallel-iterate.qcl";
 include "adder/parallel-add.qcl";
 
-procedure operatorX(qureg A, qureg target, int l) {
+cond operator operatorX(qureg A, qureg target, int l) {
 	int n = 2^l;
 	
 	// Qubits for parallel adder

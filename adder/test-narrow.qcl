@@ -87,7 +87,9 @@ addernarrow(stables, ctables, a, b, scratch);
 // 5 | 9 > 
 // 6 | 1 > 
 
-qprint(scratch, 0);
+qprints(scratch, "scratch= ");
+qprints(stables, "stables= ");
+qprints(ctables, "ctables= ");
 
 // Sum position 0
 // in = |0>
@@ -99,6 +101,14 @@ halfadder(s0, c0, carry[0], carry[1], sum[0]);
 halfadder(s1, c1, carry[1], carry[2], sum[1]);
 halfadder(s2, c2, carry[2], carry[3], sum[2]);
 halfadder(s3, c3, carry[3], carry[4], sum[3]);
+
+dump carry;
+// SPECTRUM carry: <28,29,30,31,32>
+// 1 |30>
+
+dump sum;
+// SPECTRUM sum: <33,34,35,36>
+// 1 |2>
 
 qprint(sum & carry[4],7);
 // Expected output

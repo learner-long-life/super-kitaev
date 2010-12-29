@@ -2,7 +2,7 @@
 
 // Applies a one-bit function specified as a two-qubit (two-row) table
 // Assumes that output starts out as 0
-operator applyfunction(qureg table, qureg in, qureg output) {
+cond operator applyfunction(qureg table, qureg in, qureg output) {
 	//qprints(table, "table=");
 	// Flip input so we can apply the zero case
 	Not(in);
