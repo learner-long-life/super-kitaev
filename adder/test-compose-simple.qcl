@@ -1,0 +1,86 @@
+// Simplest test of function table composition
+include "utils/toffoli.qcl";
+include "adder/compose.qcl";
+include "adder/apply.qcl";
+
+// Composed function tables
+qureg F10[2];
+qureg F11[2];
+qureg F20[2];
+qureg in[1];
+qureg out[1];
+
+// The input into F10
+qureg in10[1];
+
+// The output from F10 and input into F11
+qureg out10in11[1];
+
+// The output of F11
+qureg out11[1];
+
+// The function tables on p. 62
+Mix(F10[0]);
+Mix(F11[0]);
+
+// ***************************************************************************
+// First apply the function tables individually, one after the other
+// to manually compose them
+
+applyfunction(F10, in10, out10in11);
+dump out10in11;
+// Expected output
+// 0.5 |0> + 0.5 |1>
+
+applyfunction(F11, out10in11, out11);
+dump out11;
+// Expected output
+// 0.75 |0> + 0.25 |1>
+
+// Uncompute back to zero!
+applyfunction(F11, out10in11, out11);
+applyfunction(F10, in10, out10in11);
+dump out10in11;
+dump out11;
+// Expected output
+// 1 |0>
+// 1 |0>
+
+// Mix the input to F10
+Mix(in10);
+
+applyfunction(F10, in10, out10in11);
+dump out10in11;
+// Expected output
+// 0.75 |0>, 0.25 |1>
+
+applyfunction(F11, out10in11, out11);
+dump out11;
+// Expected output
+// 0.625 |0>, 0.375 |1>
+
+// ***************************************************************************
+// Now compose the function tables and apply all at once
+
+compose2table(F20, F10, F11);
+dump F20;
+// Expected output
+// 0.5 |0>, 0.25 |2>, 0.25 |3>
+
+dump F20[0];
+// Expected output
+// 0.75 |0>, 0.25 |1>
+
+dump F20[1];
+// Expected output
+// 0.5 |0>, 0.5 |1>
+
+// Mix input
+Mix(in);
+dump in;
+
+applyfunction(F20, in, out);
+dump out;
+
+// Expected output
+// 0.625 |0>, 0.375 |1>
