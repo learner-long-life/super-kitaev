@@ -1,0 +1,54 @@
+include "utils/qprint.qcl";
+include "utils/toffoli.qcl";
+include "adder/compose.qcl";
+
+// Let n=8, l=3, and therefore we need ((2^4)-1) * 2 qubits to store all
+// function table lines
+qureg tables[30];
+qureg condition[1];
+
+Mix(condition[0]);
+
+// Let's make it interesting by inserting some ones
+Mix(tables[0]);
+Mix(tables[2]);
+Mix(tables[4]);
+Mix(tables[7]);
+Mix(tables[9]);
+Mix(tables[11]);
+Mix(tables[13]);
+Mix(tables[14]);
+dump tables[0..1];
+dump tables[2..3];
+dump tables[4..5];
+dump tables[6..7];
+dump tables[8..9];
+dump tables[10..11];
+dump tables[12..13];
+dump tables[14..15];
+// Expected outputs
+// tables[0..1]=   | 1 > 
+// tables[2..3]=   | 1 > 
+// tables[4..5]=   | 1 > 
+// tables[6..7]=   | 2 > 
+// tables[8..9]=   | 2 > 
+// tables[10..11]= | 2 > 
+// tables[12..13]= | 2 > 
+// tables[14..15]= | 1 > 
+
+if (condition[0]) {
+	composeTables(tables, 3);
+}
+
+print "***";
+dump tables[16..17];
+dump tables[18..19];
+dump tables[20..21];
+dump tables[22..23];
+
+print "***";
+dump tables[24..25];
+dump tables[26..27];
+
+print "***";
+dump tables[28..29];
