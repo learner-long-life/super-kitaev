@@ -20,16 +20,21 @@ print "A= ",A;
 dump;
 dump A;
 
+dump B;
+
 //condition = instrument[0];
 dump instrument[0];
 if (instrument[0]) {
 	operatorX(A, B, 1);
 }
-//else {
-//	CNot(B, A);
-//}
+else {
+	CNot(B[0], A[0]);
+	CNot(B[1], A[1]);
+}
 dump B;
 dump A;
+// SPECTRUM A: <0,1>
+// 0.25 |0>, 0.25 |1>, 0.25 |2>, 0.25 |3>
 
 measure instrument[0], c;
 
@@ -37,3 +42,5 @@ print "c= ", c;
 dump instrument[0];
 
 dump B;
+// SPECTRUM B: <2,3>
+// 0.25 |0>, 0.25 |1>, 0.25 |2>, 0.25 |3>
