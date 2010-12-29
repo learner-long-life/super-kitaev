@@ -1,0 +1,9 @@
+// Copy one register to another qubit-wise with CNot, assuming destination
+// is initialized to |0> state
+cond operator copy(qureg dst, qureg src) {
+	int n = #src;
+	int i;
+	for i = 0 to n-1 {
+		CNot(dst[i], src[i]);
+	}
+}

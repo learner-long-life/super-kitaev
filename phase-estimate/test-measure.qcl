@@ -2,6 +2,7 @@
 
 include "magic-state/create.qcl";
 include "phase-estimate/operator-x.qcl";
+include "utils/copy.qcl";
 
 qureg A[2];
 qureg B[2];
@@ -28,8 +29,7 @@ if (instrument[0]) {
 	operatorX(A, B, 1);
 }
 else {
-	CNot(B[0], A[0]);
-	CNot(B[1], A[1]);
+	copy(B, A);
 }
 dump B;
 dump A;
