@@ -8,8 +8,7 @@ include "utils/copy.qcl";
 
 qureg A[4];
 qureg B[4];
-qureg C[4];
-qureg instrument[2];
+qureg instrument[1];
 qucond condition;
 int c;
 
@@ -32,28 +31,11 @@ if (instrument[0]) {
 dump B;
 dump A;
 
-dump instrument[1];
-//if (instrument[1]) {
-	operatorX(B, C, 2);
-//} else {
-//	copy(C, B);
-//}
-
-dump C;
-dump B;
-dump A;
-
-
+//****************************************************************************
 measure instrument[0], c;
 
 print "c= ", c;
 dump instrument[0];
 
-measure instrument[1], c;
-
-print "c= ", c;
-dump instrument[1];
-
 dump A;
 dump B;
-dump C;
