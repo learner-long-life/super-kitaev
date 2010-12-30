@@ -33,6 +33,7 @@ for i=0 to s-1 {
 	} else {
 		copy(B[k..k+3], B[j..j+3]);
 	}
+	dump B[j..j+3];
 }
 
 for i=0 to s-1 {

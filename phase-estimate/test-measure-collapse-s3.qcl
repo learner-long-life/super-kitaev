@@ -22,7 +22,6 @@ CreateOddMagicSuperposition(A);
 
 dump A;
 
-//condition = instrument[0];
 dump instrument[0];
 if (instrument[0]) {
 	operatorX(A, B, 2);
@@ -67,6 +66,12 @@ measure instrument[1], c;
 print "c= ", c;
 dump instrument[1];
 
+measure instrument[2], c;
+
+print "c= ", c;
+dump instrument[2];
+
 dump A;
 dump B;
 dump C;
+dump D;
