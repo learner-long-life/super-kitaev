@@ -1,0 +1,19 @@
+// Test the increment operator
+
+include "phase-estimate/operator-x.qcl";
+
+qureg A[4];
+qureg B[4];
+
+// |A> = |4>
+Not(A[2]);
+
+dump A;
+// SPECTRUM A: <0,1,2,3>
+// 1 |4>
+
+// n=4 --> l=2
+operatorX(A, B, 2);
+dump B;
+// SPECTRUM B: <4,5,6,7>
+// 1 |5>
