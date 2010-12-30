@@ -55,23 +55,37 @@ dump C;
 dump B;
 dump A;
 
+// Unmix the instrument / control qubit
+dump instrument;
+Mix(instrument);
+dump instrument;
+// SPECTRUM instrument: <16,17,18>
+// 0.125 |0>, 0.125 |1>, 0.125 |2>, 0.125 |3>, 0.125 |4>, 0.125 |5>, 0.125 |6>, 0.125 |7>
 
 measure instrument[0], c;
 
-print "c= ", c;
-dump instrument[0];
+print "c0= ", c;
 
 measure instrument[1], c;
 
-print "c= ", c;
-dump instrument[1];
+print "c1= ", c;
 
 measure instrument[2], c;
 
-print "c= ", c;
-dump instrument[2];
+print "c2= ", c;
 
 dump A;
+// SPECTRUM A: <0,1,2,3>
+// 0.5 |0>, 0.5 |8>
+
 dump B;
+// SPECTRUM B: <4,5,6,7>
+// 0.25 |0>, 0.25 |1>, 0.25 |8>, 0.25 |9>
+
 dump C;
+// SPECTRUM C: <8,9,10,11>
+// 0.125 |0>, 0.25 |1>, 0.125 |2>, 0.125 |8>, 0.25 |9>, 0.125 |10>
+
 dump D;
+// SPECTRUM D: <12,13,14,15>
+// 0.0625 |0>, 0.1875 |1>, 0.1875 |2>, 0.0625 |3>, 0.0625 |8>, 0.1875 |9>, 0.1875 |10>, 0.0625 |11>
