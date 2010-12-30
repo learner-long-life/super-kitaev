@@ -25,4 +25,7 @@ cond operator operatorX(qureg A, qureg target, int l) {
 	Not(one[0]);
 	
 	parallelAdd(stables, ctables, A, one, l, scratch, carry, target);
+	
+	// Undo the one!
+	Not(one[0]);
 }

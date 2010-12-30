@@ -53,9 +53,9 @@ cond operator composeTables(qureg tables, int l) {
 	for i=0 to l-1 {
 		l1 = l-i-1;
 		m = 2^l1;
-		print "m= ", m;
-		print "l1= ", l1;
-		print "start= ", start;
+		//print "m= ", m;
+		//print "l1= ", l1;
+		//print "start= ", start;
 		composeTableHelper(tables, start, m);
 		start = start + 4*m;
 	}
@@ -71,8 +71,8 @@ cond operator unComposeTables(qureg tables, int l) {
 	int l1; // invert the index from l downto 1
 	for i=0 to l-1 {
 		m = 2^i;
-		print "m= ", m;
-		print "start= ", start;
+		//print "m= ", m;
+		//print "start= ", start;
 		composeTableHelper(tables, start*2, m);
 		start = start - 4*m;
 	}

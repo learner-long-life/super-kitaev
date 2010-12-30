@@ -54,10 +54,10 @@ cond operator parallelUnIterate(qureg tables, qureg states, int l) {
 	//print "tableStart= ", tableStart;
 	for i=0 to l-1 {
 		l1 = l-i;
-		print "i=",i;
+		//print "i=",i;
 		k = 2^i;
 		parallelIterateHelper(tables, states, tableStart*2, k, n);
-		print "k=",k;
+		//print "k=",k;
 		tableStart = tableStart + (2^(l1));
 	}
 }

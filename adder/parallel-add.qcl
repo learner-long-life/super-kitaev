@@ -14,34 +14,34 @@ cond operator parallelAdd(qureg stables, qureg ctables, qureg a, qureg b, int l,
 	int n = 2^l; // number of bits to add
 	int j; // 2*i for indexing stables
 	
-	print "narrowing tables";
+	//print "narrowing tables";
 	// Narrow adder tables
 	addernarrow(stables, ctables, a, b, scratch);
 	
-	print "composing tables";
+	//print "composing tables";
 	// Compose ctables in l levels
 	composeTables(ctables, l);
 
-	print "iterating in parallel";
+	//print "iterating in parallel";
 	// Compute the carry bits in parallel
 	parallelIterate(ctables, carry, l);
 	
-	print "summing";
+	//print "summing";
 	// Compute the sums using the sum tables and carry bits
 	for i=0 to n-1 {
 		j = 2*i;
 		applyfunction(stables[j..j+1], carry[i], sum[i]);
 	}
 
-	print "uniterating in parallel";
+	//print "uniterating in parallel";
 	// Uncompute the carry bits in parallel, except for last one
 	parallelUnIterate(ctables, carry, l);
 	
-	print "uncomposing tables";
+	//print "uncomposing tables";
 	// Uncompose tables to free up ancillae
 	unComposeTables(ctables, l);
 	
-	print "unnarrowing tables";
+	//print "unnarrowing tables";
 	// Unnarrow tables to free up ancillae
 	addernarrow(stables, ctables, a, b, scratch);
 }
