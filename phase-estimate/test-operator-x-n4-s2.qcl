@@ -1,0 +1,23 @@
+// Test the increment operator
+
+include "phase-estimate/operator-x.qcl";
+
+qureg A[4];
+qureg B[4];
+qureg C[4];
+
+// Let's make this a bell pair
+Mix(A[1]);
+CNot(A[0], A[1]);
+dump A;
+// Expected output:
+// 0.5 |0>, 0.5 |3>
+
+// n=4 --> l=2
+operatorX(A, C, 2);
+dump C;
+// SPECTRUM B: <4,5,6,7>
+// 0.5 |1>, 0.5 |4>
+
+operatorX(C, B, 2);
+dump B;
