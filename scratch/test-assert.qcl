@@ -1,0 +1,7 @@
+// Test new assert facility in QCL
+
+qureg A[2];
+
+Mix(A);
+
+assert A;
