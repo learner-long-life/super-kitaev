@@ -44,6 +44,10 @@ cond operator parallelIterate(qureg tables, qureg states, int l) {
 	}
 }
 
+// Uncompute the states which were computed in parallel earlier
+// Note that we need some way of deciding whether to keep the high carry bit or not
+// For our purposes, we don't need to keep it for now
+// I'm sure I'll regret this in the future when I need it and have forgotten how
 cond operator parallelUnIterate(qureg tables, qureg states, int l) {
 	int n = 2^l;
 	int tableStart = 0;
@@ -52,7 +56,7 @@ cond operator parallelUnIterate(qureg tables, qureg states, int l) {
 	int k; // successive intervals in each layer, power of two
 
 	//print "tableStart= ", tableStart;
-	for i=0 to l-1 {
+	for i=0 to l { // change l to l-1 if you want to keep the high carry bit!
 		l1 = l-i;
 		//print "i=",i;
 		k = 2^i;
