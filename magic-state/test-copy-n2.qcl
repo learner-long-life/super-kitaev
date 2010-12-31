@@ -1,4 +1,3 @@
-include "magic-state/create.qcl";
 include "utils/qprint.qcl";
 include "utils/toffoli.qcl";
 include "adder/encoded.qcl";
@@ -6,6 +5,7 @@ include "adder/narrow.qcl";
 include "adder/compose.qcl";
 include "adder/parallel-iterate.qcl";
 include "adder/parallel-add.qcl";
+include "magic-state/create.qcl";
 
 // Qubits for encoded adder
 
