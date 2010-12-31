@@ -62,3 +62,19 @@ cond operator unOperatorX(qureg A, qureg target, int l) {
 	// Undo the one!
 	Not(one[0]);
 }
+
+// Following something something by Charlie Bennett!
+cond operator operatorXInPlace(qureg A, int l) {
+	// Scratch target register to temporarily hold something
+	int n = 2^l;
+	qureg scratch[n];
+
+	// Compute the original function
+	operatorX(A, scratch, l);
+
+	// Swap the function and its input
+	Swap(A, scratch);
+	
+	// Apply the opposite
+	unOperatorX(A, scratch, l);
+}

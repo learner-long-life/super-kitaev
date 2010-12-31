@@ -7,10 +7,8 @@ include "phase-estimate/operator-x.qcl";
 include "utils/copy.qcl";
 include "dft.qcl";
 
-int s=10;
-int end=4*(s-1);
-qureg B[4*(s+1)];
-qucond condition;
+int s=15;
+qureg B[4];
 int c;
 int i;
 int sum = 0;
@@ -22,20 +20,18 @@ qureg instrument[s];
 Mix(instrument);
 
 // Create a magic state to copy |\psi_{4,1}>
-CreateOddMagicSuperposition(B[0..3]);
+CreateOddMagicSuperposition(B);
 
-dump B[0..3];
+dump B;
 
 for i=0 to s-1 {
 	dump instrument[i];
 	j = 4*i;
 	k = 4*(i+1);
 	if (instrument[i]) {
-		operatorX(B[j..j+3], B[k..k+3], 2);
-	} else {
-		copy(B[k..k+3], B[j..j+3]);
+		operatorXInPlace(B, 2);
 	}
-	dump B[j..j+3];
+	dump B;
 }
 
 // Unmix the instruments
@@ -48,13 +44,11 @@ for i=0 to s-1 {
 		sum = sum + 1;
 	}
 	j = 4*i;
-	dump B[j..j+3];
+	dump B;
 }
 
 print "sum= ", sum;
 
-dump B[end..end+3];
+dft(B);
 
-dft(B[end..end+3]);
-
-dump B[end..end+3];
+dump B;
