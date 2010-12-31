@@ -5,6 +5,7 @@
 include "magic-state/odd-superpose.qcl";
 include "phase-estimate/operator-x.qcl";
 include "utils/copy.qcl";
+include "dft.qcl";
 
 qureg A[4];
 qureg B[4];
@@ -89,3 +90,8 @@ dump C;
 dump D;
 // SPECTRUM D: <12,13,14,15>
 // 0.0625 |0>, 0.1875 |1>, 0.1875 |2>, 0.0625 |3>, 0.0625 |8>, 0.1875 |9>, 0.1875 |10>, 0.0625 |11>
+
+// Transform to computational basis
+dft(D);
+
+dump D;

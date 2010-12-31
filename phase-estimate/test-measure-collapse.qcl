@@ -5,8 +5,10 @@
 include "magic-state/odd-superpose.qcl";
 include "phase-estimate/operator-x.qcl";
 include "utils/copy.qcl";
+include "dft.qcl";
 
 int s=10;
+int end=4*(s-1);
 qureg B[4*(s+1)];
 qucond condition;
 int c;
@@ -29,12 +31,15 @@ for i=0 to s-1 {
 	j = 4*i;
 	k = 4*(i+1);
 	if (instrument[i]) {
-		operatorX(B[j..j+1], B[k..k+3], 2);
+		operatorX(B[j..j+3], B[k..k+3], 2);
 	} else {
 		copy(B[k..k+3], B[j..j+3]);
 	}
 	dump B[j..j+3];
 }
+
+// Unmix the instruments
+Mix(instrument);
 
 for i=0 to s-1 {
 	measure instrument[i], c;
@@ -48,4 +53,8 @@ for i=0 to s-1 {
 
 print "sum= ", sum;
 
-dump;
+dump B[end..end+3];
+
+dft(B[end..end+3]);
+
+dump B[end..end+3];
