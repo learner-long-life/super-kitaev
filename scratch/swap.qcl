@@ -1,0 +1,14 @@
+qureg A[2];
+qureg B[2];
+
+// Create a Bell state in A
+Mix(A[0]);
+CNot(A[1], A[0]);
+
+dump A;
+dump B;
+
+Swap(A, B);
+
+dump A;
+dump B;
