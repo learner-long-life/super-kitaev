@@ -1,0 +1,54 @@
+// Test to do additional (or any reversible function) in place
+
+include "phase-estimate/operator-x.qcl";
+
+qureg A[2];
+qureg B[2];
+
+// Create a Bell state (|00> + |11>)
+Mix(A[1]);
+CNot(A[0], A[1]);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |3>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 1 |0>
+
+// Compute the original function
+operatorX(A, B, 1);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |3>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 0.5 |0>, 0.5 |1>
+
+// Swap the function and its input
+Swap(A, B);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |1>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 0.5 |0>, 0.5 |3>
+
+// Apply the opposite
+unOperatorX(A, B, 1);
+
+// Now B should be back to 0
+// and A should contain the incremented sum
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |1>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 1 |0>
