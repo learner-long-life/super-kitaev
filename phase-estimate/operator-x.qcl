@@ -29,3 +29,36 @@ cond operator operatorX(qureg A, qureg target, int l) {
 	// Undo the one!
 	Not(one[0]);
 }
+
+// This is an explicit inverse operator to the above which performs
+// subtraction of one from A using the method in Section 5.3 of DKRS
+cond operator unOperatorX(qureg A, qureg target, int l) {
+	int n = 2^l;
+	
+	// Qubits for parallel adder
+	qureg scratch[4]; // we always need 4 scratch bits to narrow 2-line tables
+
+	// Registers for narrowed carry tables
+	qureg ctables[2*(2^(l+1)-1)];
+	qureg stables[2*n];
+
+	qureg carry[n+1]; // we actually ignore high carry bit
+	
+	qureg one[n]; // Dedicated register to hold constant 1
+	
+	Not(one[0]);
+	
+	// Complement A
+	Not(A);
+	
+	parallelAdd(stables, ctables, A, one, l, scratch, carry, target);
+
+	// Uncomplement A
+	Not(A);
+	
+	// Complement the sum / output / target
+	Not(target);
+	
+	// Undo the one!
+	Not(one[0]);
+}
