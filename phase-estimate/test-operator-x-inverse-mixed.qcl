@@ -1,0 +1,51 @@
+// Test the inverse of the increment operator
+
+include "phase-estimate/operator-x.qcl";
+
+qureg A[2];
+qureg B[2];
+qureg C[2];
+
+// Let's make this a bell pair
+Mix(A[1]);
+CNot(A[0], A[1]);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |3>
+
+// n=2 --> l=1
+operatorX(A, B, 1);
+operatorX(A, C, 1);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |3>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 0.5 |0>, 0.5 |1>
+
+dump C;
+// SPECTRUM C: <4,5>
+// 0.5 |0>, 0.5 |1>
+
+!operatorX(A, B, 1);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 0.5 |0>, 0.5 |3>
+
+dump B;
+// SPECTRUM B: <2,3>
+// 1 |0>
+
+unOperatorX(C, A, 1);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 1 |0>
+
+dump C;
+// SPECTRUM C: <4,5>
+// 0.5 |0>, 0.5 |1>

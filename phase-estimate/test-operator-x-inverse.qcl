@@ -1,0 +1,45 @@
+// Test the inverse of the increment operator
+
+include "phase-estimate/operator-x.qcl";
+
+qureg A[2];
+qureg B[2];
+qureg C[2];
+
+// Let's start with a simple classical case
+Not(A[1]);
+// |2>
+
+dump A;
+// SPECTRUM A: <0,1>
+// 1 |2>
+
+// n=2 --> l=1
+operatorX(A, B, 1);
+operatorX(A, C, 1);
+
+dump B;
+// SPECTRUM B: <2,3>
+// 1 |3>
+
+dump C;
+// SPECTRUM C: <4,5>
+// 1 |3>
+
+!operatorX(A, B, 1);
+
+dump B;
+// SPECTRUM B: <2,3>
+// 1 |0>
+
+// Effectively swap A and C and perform explcit inverse (decrement/subtract)
+// to erase the target register, making it a true ancilla
+unOperatorX(C, A, 1);
+
+dump A;
+// SPECTRUM A: <0,1>
+// 1 |0>
+
+dump C;
+// SPECTRUM C: <4,5>
+// 1 |3>
