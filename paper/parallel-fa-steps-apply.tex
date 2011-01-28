@@ -1,0 +1,52 @@
+\subsection{Applying Function Tables}
+\label{subsec:apply}
+
+Finally, we have narrowed tables composed so that we can skip ahead to
+intermediate states in a logarithmic-depth, binary tree fashion.
+
+The scheme for determining all the intermediate states $s_i$ follows
+the diagram below. Recall that we start out knowing the initial state
+$s_0$.
+
+\begin{displaymath}
+\xymatrix @C=1em {
+\text{step 1} & s_0 \ar[rrrr]^{F_{2,0}} \ar[ddd] &     &        &     & s_4 \ar[ddd]\\
+\text{step 2} &     \ar[rr]^{F_{1,0}}   &     & s_2 \ar[dd]    &     & \\
+\text{step 3} &     \ar[r]^{F_{0,1}} & s_1 \ar[d] & \ar[r]^{F_{0,3}} & s_3 \ar[d] & \\
+              &               &     &        &     &
+}
+\end{displaymath}
+
+In general, there are $k_s+1$ steps in applying these composed
+functions in parallel. Applying each function takes $2^{k_s}$
+generalized Toffoli's,
+each with $k_s$ controls and in total requiring $2^{k_s}$ negative
+controls. Recall that such a generalized Toffoli can be implemented
+with $k_s - 1$ normal Toffoli's and $k_s - 2$ ancillae.
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+F_{k,i}^j & & s_i = 00 & & \qw & \ctrl{4} & \qw      & \qw      & \qw      & \qw\\
+        & & s_i = 01 & & \qw & \qw       & \ctrl{3}  & \qw       & \qw      & \qw\\
+        & & s_i = 10 & & \qw & \qw       & \qw       & \ctrl{2}  & \qw      & \qw\\
+        & & s_i = 11 & & \qw & \qw       & \qw       & \qw       & \ctrl{1} & \qw\\
+s_i^0   & &          & & \qw & \ctrlo{1} & \ctrlo{1} & \ctrl{1}  & \ctrl{1} & \qw \\
+s_i^1   & &          & & \qw & \ctrlo{1} & \ctrl{1}  & \ctrlo{1} & \ctrl{1} & \qw \\
+s_{i+1}^j & &        & & \qw & \targ     & \targ     & \targ     & \targ    & \qw \\
+}
+\end{displaymath}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r|cc|}
+\hline
+NOT Gates per Composition & $\ell_N = $ & $k_s \cdot (2^{k_s} \cdot 2$ \\
+Toffoli Gates per Composition & $\ell_T = $ & $k_s \cdot (2^{k_s}\cdot (k_s-1)) \cdot 2$\\
+Total NOT Gates & & $(2^l - 1) \cdot \ell_N$ \\
+Total Toffoli Gates & & $(2^l - 1) \cdot \ell_T$ \\
+Ancillae & & $(2^l - 1)\cdot k_s \cdot (2^{k_s} + (k_s - 1)) \cdot 2$\\
+Circuit Depth & & $(2^l - 1)(\ell_T d_T + \ell_N d)$\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}

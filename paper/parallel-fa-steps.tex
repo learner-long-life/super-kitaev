@@ -1,0 +1,35 @@
+\section{Parallel Iterations}
+\label{sec:pi}
+
+The process of parallelizing iterations has four main steps, each of which
+has its own section below with general resource requirements.
+
+The first step is copying function tables due to fanout restrictions.
+For classical circuits this is a polite gesture towards the fact that
+transistors can only drive a finite (but fairly large) load. For quantum
+circuits, this is an absolute necessity. So if we are going to be applying
+a bunch of FA transition functions in parallel, we'd better have a separate
+copy of the function for each execution.
+
+The second step is narrowing the function tables by input. Since we know all
+the input symbols in advance, we can vastly simplify the table for each
+iteration $i$ by only selecting the lines which correspond to the input
+symbol $a_i$. In a sense, we are ``optimizing'' the table, or hard-coding
+for a particular input symbol by ``baking'' it into the execution of this new,
+narrower function.
+
+The third step is composing adjacent pairs of these narrowed function tables
+in a binary tree hierarchy, so that we can skip ahead to future iterations.
+
+Finally, the last step is to apply these composed function tables, in the
+same binary tree hierarchy, to compute all the states $s_i$ in parallel
+using only logarithmic depth.
+
+\input{parallel-fa-steps-copy}
+
+\input{parallel-fa-steps-narrow}
+
+\input{parallel-fa-steps-compose}
+
+\input{parallel-fa-steps-apply}
+

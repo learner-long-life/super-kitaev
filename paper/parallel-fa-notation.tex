@@ -1,0 +1,80 @@
+\section{Notation}
+\label{sec:notation}
+
+Because the $g$ output function is optional, we imitate the Kronecker delta
+function to simplify the resource counts with a single multiplicative
+constant:
+
+\begin{equation*}
+\delta_g = \left\{
+  \begin{array}{rl}
+    0 & \text{if } g \text{ is unused}\\
+    1 & \text{if } g \text{ is used}\\
+  \end{array} \right.
+\end{equation*}
+
+We denote by $w(f)$ for a particular function table $f$ to be the
+number of ones that appear in the outputs. If the optional output function $g$
+is not needed by an FA, then we have $w(g) = k_o = 0$.
+The number of ones can be at most the number of lines in the function
+table, so $w(f) \le 2^{k_i+k_s}$.
+
+Similarly, we denote by $z(f)$ for a particular function table $f$ to be
+the number of ones which appear in the outputs for a zero input. Again,
+an unused function $g$ would result in $z(g) = 0$.
+Naturally, we can't have more output ones for zero inputs than
+output ones for any inputs: $z(f) \le w(f)$.
+
+Since $n$ may not be a power of two, a common parameter will be the
+logarithm of $n$ rounded up to the nearest power of two, which we'll
+defined as $l = \lceil \log_2 n \rceil$.
+
+In the gate counts below, we will include the counts of single-qubit NOT, or X,
+gates, which is used to negate the control of controlled-NOTs or Toffoli's.
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+& \ctrlo{1} & \qw & =  & & \qw & \targ & \ctrl{1} & \qw &\\
+& \targ     & \qw &    & & \qw & \qw   & \targ    & \qw &
+}
+\end{displaymath}
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+& \ctrlo{1} & \qw & =  & & \qw & \targ & \ctrl{1} & \qw &\\
+& \ctrl{1}     & \qw &    & & \qw & \qw   & \ctrl{1}    & \qw &\\
+& \targ     & \qw &    & & \qw & \qw   & \targ    & \qw &
+}
+\end{displaymath}
+
+To compare the relative complexity of implementing the Toffoli gate versus
+CNOT and single-qubit gates, we can consider the following implementation
+of Toffoli given in Figure 4.9, page 182 of \cite{nc00}. One Toffoli equals
+6 CNOT gates and 10 single-qubit gates (Hadamard and controlled-phase).
+
+We denote $d_T$ as the depth of a Toffoli gate, $d_C$ as the depth of a
+CNOT, and $d$ as the depth of a single-qubit gate. That last one we admit
+can vary widely based on the particular single-qubit gate, but we have to
+draw the line at some point. So based on our implementation of the
+Toffoli above, we have:
+
+\begin{displaymath}
+d_T = 6d_C + 10d
+\end{displaymath}
+
+We also note that a multiply ($n$) controlled-NOT ($\Lambda^n(X)$) can be
+implemented with $n-1$ Toffoli's and $n-2$ ancillae, where $n=2$ is a
+normal Toffoli.
+
+In each of the four steps of parallel iteration described in Section
+\ref{sec:pi}, we provide a table of resource usage: the number of gates
+of each type (single-qubit NOT, CNOT, and Toffoli), the number of ancillae,
+and the depth of the circuit. The number of gates is specified per input and
+often redefined as $\ell$ with some subscript, which we then reuse in
+the circuit depth for notational convenience. This is because
+these operations happen in parallel for each of the inputs, leading to an
+implicit factor $n$. However, this factor disappears or becomes logarithmic
+in the circuit depth; otherwise, we would not have accomplished our goal
+of decreasing depth with parallel iteration!
+There is also always a factor of 2 in the depth
+and gate count to allow for uncomputing the ancillae back to $\ket{0}$.

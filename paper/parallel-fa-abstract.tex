@@ -1,0 +1,13 @@
+\section{Abstract}
+
+We describe the technique of parallel iteration of classical finite
+automata (FA) to achieve exponential improvement in circuit depth with
+only polynomial circuit size overhead. Running an FA on $n$ inputs
+normally takes $O(n)$ depth, but by copying the transition function
+table, narrowing it by the inputs (known \emph{a priori}), composing
+adjacent functions, and then applying composed functions to iterate
+the FA on several states in parallel, we can achieve $O(\log n)$-depth.
+In particular, we describe how this technique is used for quantum
+adding and classical phase sharpening in the Super-Kitaev algorithm
+for quantum compiling, giving exact gate sequences and the resource
+requirements in each case.
