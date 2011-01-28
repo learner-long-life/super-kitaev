@@ -1,0 +1,50 @@
+\section{Parallelized Phase Sharpening}
+\label{sec:sharp}
+
+\begin{tabular}{|c|c|c||c|c||c|}
+\hline
+$\beta_j$ & $\alpha_{j+1}$ & $\alpha_{j+2}$ & $\overline{\beta_j}$ & $\overline{\alpha_j\alpha_{j+1}\alpha_{j+2}}$ & $\alpha_j$\\
+\hline
+000 & 0 & 0 & $\frac{0}{8}$ & $\frac{0}{8}$ & 0\\
+    & 0 & 1 &               & $\frac{1}{8}$ & 0\\
+    & 1 & 0 &               &               & X\\
+    & 1 & 1 &               & $\frac{3}{8}$ & 0\\
+\hline
+001 & 0 & 0 & $\frac{1}{8}$ & $\frac{0}{8}$ & 0\\
+    & 0 & 1 &               & $\frac{1}{8}$ & 0\\
+    & 1 & 0 &               & $\frac{2}{8}$ & 0\\
+    & 1 & 1 &               &               & X\\
+\hline
+010 & 0 & 0 & $\frac{2}{8}$ &               & X\\
+    & 0 & 1 &               & $\frac{1}{8}$ & 0\\
+    & 1 & 0 &               & $\frac{2}{8}$ & 0\\
+    & 1 & 1 &               & $\frac{3}{8}$ & 0\\
+\hline
+011 & 0 & 0 & $\frac{3}{8}$ & $\frac{4}{8}$ & 1\\
+    & 0 & 1 &               &               & X\\
+    & 1 & 0 &               & $\frac{2}{8}$ & 0\\
+    & 1 & 1 &               & $\frac{3}{8}$ & 0\\
+\hline
+100 & 0 & 0 & $\frac{4}{8}$ & $\frac{4}{8}$ & 1\\
+    & 0 & 1 &               & $\frac{5}{8}$ & 1\\
+    & 1 & 0 &               &               & X\\
+    & 1 & 1 &               & $\frac{3}{8}$ & 0\\
+\hline
+101 & 0 & 0 & $\frac{5}{8}$ & $\frac{4}{8}$ & 1\\
+    & 0 & 1 &               & $\frac{5}{8}$ & 1\\
+    & 1 & 0 &               & $\frac{6}{8}$ & 1\\
+    & 1 & 1 &               &               & X\\
+\hline
+110 & 0 & 0 & $\frac{6}{8}$ &               & X\\
+    & 0 & 1 &               & $\frac{5}{8}$ & 1\\
+    & 1 & 0 &               & $\frac{6}{8}$ & 1\\
+    & 1 & 1 &               & $\frac{7}{8}$ & 1\\
+\hline
+111 & 0 & 0 & $\frac{7}{8}$ & $\frac{0}{8}$ & 0\\
+    & 0 & 1 &               &               & X\\
+    & 1 & 0 &               & $\frac{6}{8}$ & 1\\
+    & 1 & 1 &               & $\frac{7}{8}$ & 1\\
+\hline
+\end{tabular}
+
+\subsection{Resource Requirements for Phase Sharpening}

@@ -15,11 +15,11 @@ narrowed by input $a_i$.
 \xymatrix @C=1em {
   \ar[rr]^{s_0} & &
    *+[F]{F_{0,0}} \ar[rr]^{s_1} & &
-   *+[F]{F_{0,1}} \ar[rr]^{s_2} & &
+   *+[F.]{F_{0,1}} \ar[rr]^{s_2} & &
    *+[F]{F_{0,2}} \ar[rr]^{s_3} & &
-   *+[F]{F_{0,3}} \ar[rr]^{s_4} & & \\
+   *+[F.]{F_{0,3}} \ar[rr]^{s_4} & & \\
   & & & *+[F]{F_{1,0}} \ar@{<-}[ul] \ar@{<-}[ur]
-  & & & & *+[F]{F_{1,1}} \ar@{<-}[ul] \ar@{<-}[ur] \\
+  & & & & *+[F.]{F_{1,1}} \ar@{<-}[ul] \ar@{<-}[ur] \\
   & & & & & *+[F]{F_{2,0}} \ar@{<-}[ull] \ar@{<-}[urr]
 }
 \end{displaymath}
@@ -27,8 +27,19 @@ narrowed by input $a_i$.
 How many composition operations do we need to do for our $n$ initial
 narrowed $F_{0,i}$ tables? The resulting full binary tree (except for
 the first level) has $\lceil \log_2 n \rceil = l$ levels and therefore
-$2^{l}-1$ nodes, so that is the number of composition operations we need
-to do.
+$2^{l}-1$ nodes. However, as will become apparent in the next section, we don't
+need the compositions with a dotted border above.
+
+Since at each level of compositions, we can remove half of the nodes
+(except for the root node), we have the following formula of the
+total number of compositions we need for $n$ iterations and $l$ levels,
+where the root level corresponds to $j=0$.
+
+\begin{equation}
+\sum_{j=0}^{l-1} 2^j - \sum_{j=1}^{l-1} 2^{j} =
+(2^l - 1) - (2^{l-1} - 1) = 2^l - 2^{l-1} = 2^{l-1}
+\end{equation}
+\label{eqn:compose}
 
 \subsubsection{Composing Functions with Single-Bit Output}
 
@@ -111,22 +122,23 @@ $k_s$ single-bit compositions. Each single-bit composition is
 composed of $2^{k_s}$ generalized Toffoli's with $k_s +1$ controls, and
 $2^{k_s}$ NOT gates for negative controls. Remember that a generalized
 Toffoli with $k_s + 1$ controls requires $k_s$ Toffoli's and $k_s - 1$
-ancillae. Each composition requires $2^{k_s}$ ancillae to
-hold the new function table.
+ancillae. Each single-bit composition requires $2^{k_s}$ ancillae to
+hold the new function table. The single-bit compositions cannot be done
+in parallel, however, because they all use the same control bits.
 
 From the beginning of this section, we have that there are $2^l - 1$
 multiple-bit compositions, in general, which multiplies everything above,
 except the circuit depth. The circuit depth multiplier is
 just the height of the tree of compositions is $l$.
 
-\begin{table}
+\begin{table}[!h]
 \begin{center}
 \begin{tabular}{|r|cc|}
 \hline
-NOT Gates per Composition & $\ell_N = $ & $k_s \cdot (2^{k_s} \cdot 2$ \\
-Toffoli Gates per Composition & $\ell_T = $ & $k_s \cdot (2^{k_s}\cdot (k_s-1)) \cdot 2$\\
-Total NOT Gates & & $(2^l - 1) \cdot \ell_N$ \\
-Total Toffoli Gates & & $(2^l - 1) \cdot \ell_T$ \\
+NOT Gates per Multiple-Bit Composition & $\ell_N = $ & $k_s \cdot 2^{k_s} \cdot 2$ \\
+Toffoli Gates per Multiple-Bit Composition & $\ell_T = $ & $k_s \cdot (2^{k_s}\cdot (k_s-1)) \cdot 2$\\
+Total NOT Gates & & $(2^{l-1}) \cdot \ell_N$ \\
+Total Toffoli Gates & & $(2^{l-1}) \cdot \ell_T$ \\
 Ancillae & & $(2^l - 1)\cdot k_s \cdot (2^{k_s} + (k_s - 1)) \cdot 2$\\
 Circuit Depth & & $l\cdot(\ell_T d_T + \ell_N d)$\\
 \hline
