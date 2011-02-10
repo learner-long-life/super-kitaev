@@ -1,0 +1,23 @@
+\section{The Super-Kitaev Algorithm}
+
+Our development of the Super-Kitaev algorithm follows closely the one in the
+book by Kitaev, Shen, and Vyalvi \cite{ksv02}, although of course, it is
+simply called Theorem 13.5. Likewise, we will cite the theorem / lemma numbers
+from the book, which contains a self-contained description of all the parts
+needed for Super-Kitaev.
+
+The basic steps of this method are the following:
+
+\begin{enumerate}
+\item Precompiling to get $L'$ gates in $\mathcal{Q} \cup \Lambda(e^{i\phi})$.
+Here we see that there is an
+efficient decomposition of several important gates into the standard set and
+controlled-phase-shifts.
+\item Implementing a controlled-phase-shift. This ends up being the hardest
+part of simulating a quantum circuit, and requires each of the remaining steps.
+\item Use phase estimation of an addition operator to magic states in order to
+enact the desired phase shift. This requires both efficient creation of
+{\em magic states} and an efficient {\em quantum adder} circuit.
+\item Create one magic state, and then make $L'$ copies of it. Use one copy
+to simulate each $\Lambda(e^{i\phi})$ gate.
+\end{enumerate}

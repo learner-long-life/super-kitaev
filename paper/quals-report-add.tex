@@ -1,0 +1,111 @@
+\section{Quantum Adding}
+
+Since adding is such a common
+operation in Super-Kitaev and many other quantum algorithms, it's important
+for us to make sure we can do these efficiently.
+The original development of Super-Kitaev in \cite{ksv02} gives us two
+ways to add efficiently.
+The first way reduces the sum of three numbers ($a,b,c$) to the sum of
+two encoded numbers ($u,v$) in constant depth, simply by encoding the
+bitwise sum $a_i+b_i+c_i$ as a 2-bit element from $\{0,1,2,3\}$. We arbitrarily
+choose $u_i$ to be the low-order bit and $v_i$ to be high-order.
+This can be used to parallelize the sum of $m$ numbers in
+a $\log_{3/2}m$-depth tree, with $m-2$ encoded addition operations total.
+
+\begin{figure}
+\caption{Kitaev encoded adding: u}
+\end{figure}
+
+\begin{figure}
+\caption{Kitaev encoded adding: v}
+\end{figure}
+
+\begin{figure}
+\caption{$\log_{3/2} m$-depth tree for encoded adding of $m$ numbers}
+\end{figure}
+
+The encoded adding procedure is out-of-place and requires two ancillae
+(one to hold the output bit $u_i$ or $v_i$). In order to apply
+Bennett's uncomputing trick to perform this operation in-place, we round
+the number of ancillae up to three to match the number of inputs, and we
+use 3 SWAP gates (consisting of 3 CNOTs each). Because $v_i$ is high-order,
+it always gets shifted up one bit: $v_0 = 0$ and $v_n$ the high-order carry
+bit is discarded for sums modulo $2^n$.
+
+The resource counts of Super-Kitaev encoded adding of $m$ $n$-bit numbers
+are shown below, both for in-place and out-of-place.
+
+\begin{tabular}{|r|c|c|}
+\hline
+Resource      & ENC-ADD-IN      & ENC-ADD-OUT\\
+Depth         & $9$             & $6$\\ 
+Toffoli Gates & $12 (n-1) + 6$  & $6 (n-1) + 6$\\
+CNOT Gates    & $21 (n-1) + 15$ & $6 (n-1) + 6$\\
+NOT Gates     & $10 (n-1)$      & $5 (n-1)$\\
+Ancillae      & $3n$            & $4n/3$\\ 
+\hline
+\end{tabular}
+
+As usual, the resource counts of the equivalent out-of-place procedure
+are smaller.
+
+We can combine the final two encoded numbers
+into a normal $(O(\log m) + n)$-bit number using the second way of adding.
+This method uses parallelized
+iteration of general finite automata (FA) to achieve $O(\log n)$-depth circuits
+for $O(n)$ inputs. Many functions, most importantly binary
+addition and sharpening estimated phase values to exponential precision,
+can ingeniously be recast in this parallelized FA setting.
+First, $n$ copies are created of the FA
+transition function table. Each copy is then narrowed by its corresponding
+input,
+composing adjacent function tables in a binary tree hierarchy, and applying
+these composed functions to ``skip ahead'' in the FA and compute
+intermediate states in parallel.
+
+However, while achieving good asymptotic bounds, this approach has some
+disadvantages when applied to quantum adding: an overly-general narrowing
+procedure, and the inability to add in place without resorting to
+Bennett's uncomputing trick \cite{bennett}.
+For these reasons, we use the quantum carry-lookahead
+adder (QCLA) presented in \cite{dkrs}. It follows the spirit of parallel iteration
+using classical carry-lookahead techniques, in essence ``hardcoding''
+the narrowing and composing steps above for the carry bits generated
+and propagated in binary addition.
+
+The resource counts for QCLA on two $n$-bit numbers are shown below,
+for both in-place and out-of-place addition. The output bits for
+out-of-place addition are counted as ancillae for consistency.
+
+\begin{tabular}{|r|c|c|}
+\hline
+Resource & QCLA-IN & QCLA-OUT\\
+Depth    &
+
+$\lfloor \log n \rfloor  + \lfloor \log (n-1) \rfloor +
+\lfloor \log n/3 \rfloor + \lfloor \log (n-1)/3 \rfloor + 14$ &
+$\lfloor \log n \rfloor + \lfloor \log n/3 \rfloor + 7$ \\
+
+Toffoli Gates &
+$10n - 3w(n) - 3w(n-1) - 3\lfloor \log n \rfloor -
+3 \lfloor \log(n-1) \rfloor - 7$ &
+$5n - 3w(n) - 3 \lfloor \log n \rfloor - 1$\\
+
+CNOT Gates & $4n-5$ & $3n-1$\\
+
+NOT Gates & $2n-2$ & $0$ \\
+
+Ancillae & $2n - w(n) - \lfloor \log n \rfloor - 1$ & $n$\\
+\hline
+\end{tabular}
+
+By combining Super-Kitaev's encoded adding with the QCLA, we can now
+add $m$ numbers of $n$-bits each with a circuit of size $O(mn)$ and
+depth $O(\log m + \log n)$.
+
+We denote the final resource counts of adding as the following:
+
+\begin{eqnarray*}
+\text{ADD-IN}(m, n) & = & \text{QCLA-IN}(n) + \text{ENC-ADD-IN}(m,n)\\
+\text{ADD-OUT}(m, n) & = & \text{QCLA-OUT}(n) + \text{ENC-ADD-OUT}(m,n)\\
+\end{eqnarray*}

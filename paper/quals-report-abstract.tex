@@ -1,0 +1,22 @@
+\section{Abstract}
+
+Quantum compilers will be needed to implement algorithms on an
+80-qubit quantum computer being constructed in the next five years.
+Important applications include Shor's factoring algorithm for breaking
+the RSA cryptosystem, unstructured search, solving random walks, and
+the simulation of physical systems. Like digital computers, quantum
+computers need compilers to approximate high-level algorithm
+descriptions using a low-level, universal, machine-dependent
+instruction set. The Solovay-Kitaev theorem shows that this compiling
+can be done efficiently, but the lesser-known Super-Kitaev theorem
+optimizes this result using a quantum runtime component and
+parallelization, at the cost of a previously unknown overhead. For
+both algorithms, we present a pedagogical review of correctness
+proofs, open source implementations, and a performance comparison in
+approximating a two-qubit controlled-rotation gate, used in the
+Quantum Fourier Transform. Along the way, we calculate the resource
+usage of some useful building blocks in their own right (parallel
+iteration of finite automata, quantum adders, and quantum phase
+estimation). Finally, we discuss some implications for future quantum
+architectures and also analog computers (for when they come back into
+fashion).

@@ -1,0 +1,49 @@
+\subsection{The Main Algorithm}
+\label{subsec:main}
+
+Now assuming we have parallelized phase estimation as a black box, here are
+the steps to the Super-Kitaev algorithm.
+
+\begin{theorem}[Theorem 13.5]
+Any circuit $C$ of size $L$ and depth $d$ over a fixed finite basis can be
+simulated with precision $\delta$ by an $O(Ln + n^2\log n)$-size
+$O(d \log n + (\log n)^2)$-depth circuit $C'$ over the standard basis, where
+$n = O(\log(L/\delta))$.
+\end{theorem}
+
+\begin{proof}
+
+For the steps below, we note that we can avoid solving the equation $kp \equiv l (mod 2^n)$
+if we set $k=1$. This is equivalent to realizing $\Upsilon_n(e^{2\pi i / 2^n})$
+by applying $\Upsilon(A)$ from Section \ref{subsec:phase-shift} to the state
+$\ket{\psi_{n,1}}$. So we need to create one copy of this magic state to
+simulate each $\Lambda(e^{i\phi})$ gate, possibly up to $L'$ of them.
+
+\begin{enumerate}
+\item Precompile the circuit into gates from $\mathcal{Q} \cup \{\Lambda(e^{i\phi})\}$
+using the results from Section \ref{subsec:precompile}.
+\item Create the state magic state $\ket{\psi_{n,0}} = H^{\otimes n}\ket{0^n}$
+\item Turn it into $\ket{\psi_{n,1}} = \Upsilon(e^{-2\pi i / 2^n}) \ket{\psi_{n,0}}$
+using the procedure in Section \ref{subsec:phase-shift}
+This is done with a circuit of size $O(n^2\log n)$ and $O((\log n)^2)$ depth.
+\item Make $L'$ copies of the state $\ket{\psi_{n,1}}$ out of one copy by 
+apply the addition operation below.
+\item Simulate the circuit $C'$ using one copy of $\ket{\psi_{n,1}}$ per gate,
+this takes size $O(n)$ and depth $O(\log n)$.
+\item Reverse the first three steps.
+\end{enumerate}
+
+To copy the state $\ket{\psi_{n,k}}$ it suffices to apply the following
+operator:
+
+\begin{equation}
+\ket{\psi_{n,k}}^{\otimes m} = W^{-1}\left( \ket{\psi_{n,0}}^\otimes(m-1) \otimes \ket{\psi_{n,k}} \right)
+\end{equation}
+
+where $W$ is defined by
+
+\begin{equation}
+W : \ket{x_1,\ldots,x_{m-1},x_m} \rightarrow \ket{x_1,\ldots,x_{m-1},x_1+\ldots+x_m}
+\end{equation}
+
+\end{proof}

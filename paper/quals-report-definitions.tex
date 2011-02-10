@@ -1,0 +1,131 @@
+\section{Definitions}
+
+\subsection{Approximation vs. Simulation}
+
+I'll use the terms "approximation" and "simulation" interchangeably, as in
+a quantum compiler will take an input circuit and produce as output a new
+circuit which approximates or simulates the original circuit to some degree
+of precision.
+
+\subsection{Standard Set}
+
+We use the following standard set $\mathcal{Q}$ from \cite{ksv02}
+
+\begin{equation}
+\mathcal{Q} = \{ H, K, K^{-1}, \Lambda(\sigma^x), \Lambda^2(\sigma^x) \}
+\end{equation}
+
+where these gates are defined as follows:
+
+\begin{equation*}
+H = \normtwo \left(
+  \begin{array}{cc}
+    1 & 1 \\
+    1 & -1 \\
+  \end{array} \right)
+\end{equation*}
+
+\begin{equation*}
+K = \left(
+  \begin{array}{cc}
+    1 & 0 \\
+    0 & i \\
+  \end{array} \right)
+\end{equation*}
+
+Even though realistic implementations of a quantum computer may have a different
+set of hardware instructions, Kitaev's analysis assumes that the standard set
+can always be efficiently compiled down further into this hardware set.
+
+Note that this may not be valid. For example, in order for ion traps to perform
+even a Hadamard gate to any precision requires a combination of $\sigma^x$ and
+$\sigma^z$ gates. However, we won't let this bother us for now.
+
+\subsection{Parameters}
+
+For these notes, we restrict ourselves to $d=2^n$ for an $n$-qubit system (qudits)
+and consider the problem of compiling an entire circuit $C$ of $L$ gates with depth
+$d$ to a new, compiled circuit $C'$ of size $L'$ and depth $d'$ which approximates
+$C$ within some error. There is some overhead in the compiled circuit, so in
+general $C'$ is larger (that is, $L' > L$ and $d' > d$). It's also known that
+in order to approximate a circuit with $L$ gates to a total precision of $\epsilon$
+requires each gate to be approximated to a precision of $L/\epsilon$, which requires
+the following number of gates. We'll find this $l$ parameter useful in describing the compiler overheads of
+both the Solovay-Kitaev and Super-Kitaev methods.
+
+Why do we care about depth? This gives us a heuristic for how ``parallelized'' our
+circuit is. If we flatten our circuit into layers $\{l_i\}$, where each layer $l_i$
+is dependent only on inputs from the previous layer $l_{i-1}$ and produces
+only outputs to the next layer $l_{i+1}$, then all the gates within the layer
+$l_i$ can be performed in parallel. All other things being equal, a circuit with low depth will complete
+faster than one with high depth, although in practice we can only execute
+fixed-width circuits.
+
+Also, when running the compiler, there are several time resources to consider.
+The first is classical preprocessing time, denoted $T_{pre}$, which is a way of optimizing
+the generated quantum circuit by spending more classical resources upfront.
+The second is classical postprocessing time, denoted $T_{post}$, which likewise
+is meant to reduce the size of the quantum circuit but depends on quantum
+measurements and may be fed back into future quantum operations later.
+
+A summary of these parameters are provided below:
+
+\begin{tabular}{|c|c|}
+\hline
+$d$ & dimension of quantum gates (matrix representation)\\
+$\epsilon$ & the desired accuracy of the compiled circuit\\
+$L$ & size of input circuit to be compiled, in gates from $\mathcal{Q}$\\
+$d$ & depth of input circuit to be compiled\\
+$L'$ & size of compiled output circuit, in gates from $\mathcal{Q}$\\
+$d'$ & depth of compiled circuit to be compiled\\
+$n$ & $=O(\log{L/\epsilon})$, shorthand parameter for asymptotic analysis\\
+$T$ & classical running time of the compiling algorithm\\
+$T_{pre}$ & classical preprocessing time, before the compiler is run\\
+$T_{post}$ & classical postprocessing time, after the compiler is run or during\\
+\hline
+\end{tabular}
+
+\subsection{Universal Instruction Sets and Compiled Sequences}
+More formally, suppose we have a universal instruction set $\mathcal{G}$ which
+contains some finite number of gates $g \in SU(d)$ and also their inverses $g^\dagger$.
+$\mathcal{G}$ is universal for $SU(d)$ in that it generates a dense subgroup.
+In other words, given an arbitrary quantum gate $U \in SU(d)$ and a desired
+accuracy $\epsilon$ we can find a product $S=g_1 \cdots g_m$ from $\mathcal{G}$
+which approximates $U$ to within $\epsilon$ using some distance function.
+
+We can either use the matrix operator norm to define the distance function
+such as:
+
+\begin{equation}
+d(U,S) \equiv \norm{U - S} \equiv \sup_{\norm{\ket{\psi}}=1} \norm{(U-S)\ket{\psi}} < \epsilon
+\end{equation}
+
+There is also a trace measure introduced by Austin Fowler which disregards
+the global phase factor, so that we don't waste time trying to approximate
+the unmeasurable phase of our target gate.
+
+\begin{equation}
+d(U,S) = \sqrt{\frac{d - \norm{\mathrm{tr}(U^\dagger S)}}{d}}
+\end{equation}
+
+\subsection{Some Special Operator Notation}
+
+As I've become fond of the notation in \cite{ksv02}, I borrow the
+following notation for two "meta-operators" which takes some unitary $U$ as
+a parameter. The first describes a controlled-$U$ operation where the control
+is some single qubit.
+
+\begin{displaymath}
+\Lambda(U) = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes U
+\end{displaymath}
+
+The second describes a registered-$U$ operation, which
+can be thought of as controlled on some multi-qubit register $\ket{p}$
+encoding an $m$-qubit number $p$ to apply $U$ a certain number of times to a
+target
+register.
+
+\begin{displaymath}
+\Upsilon_m(U) : \ket{p} \otimes \ket{\psi} \rightarrow \ket{p}
+\otimes U^p\ket{\psi}
+\end{displaymath}

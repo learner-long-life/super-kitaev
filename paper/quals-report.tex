@@ -1,0 +1,66 @@
+\documentclass[twocolumn,10pt]{article}
+
+%\usepackage{times}
+\usepackage{fullpage}
+\usepackage{eprint}
+\usepackage{rotating}
+\usepackage{eepic}
+\usepackage{amsfonts}
+\usepackage{algorithmic}
+\usepackage{amsthm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+
+\title{Quantum Compiling with the Super-Kitaev Algorithm}
+\date{February 11, 2011}
+\author{Paul Pham}
+
+\input{Qcircuit}
+
+\begin{document}
+
+%\newcommand{\ket}[1]{|#1 \rangle}
+%\newcommand{\bra}[1]{\langle #1 |}
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+\newcommand{\norm}[1]{\parallel #1 \parallel}
+
+\maketitle
+
+\input{quals-report-abstract}
+
+\input{quals-report-intro}
+
+\input{quals-report-definitions}
+
+%\input{quals-report-perform}
+
+\input{quals-report-related}
+
+\input{quals-report-sk-algo}
+
+%\input{quals-report-super}
+
+\input{quals-report-main-algo}
+
+\input{quals-report-precompile}
+
+\input{quals-report-phase-shift}
+
+\input{quals-report-phase-estimate}
+
+\input{quals-report-add}
+
+\input{quals-report-mult}
+
+\input{quals-report-div}
+
+\input{quals-report-results}
+
+\input{quals-report-future}
+
+\bibliography{report}
+\bibliographystyle{tocplain}
+
+\end{document}

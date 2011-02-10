@@ -1,0 +1,201 @@
+\section{Parallelized Phase Estimation}
+
+One of the key components of the registered phase shifting procedure
+described in the previous section is the ability to ``pick'' a random
+eigenstate $\ket{\psi_k}$ of a unitary operator $U$ and
+measure its corresponding eigenvalue (phase) $\phi_k$
+with some degree of precision $\delta = 2^{-n}$ and
+error probability $\epsilon = 2^{-l}$. As $n$ increases, the phases
+generally become closer together, which is why we need exponential precision
+to distinguish between them.
+Of course, this exactly describes the phase
+estimation procedure, a key technique in many quantum algorithms developed
+by Kitaev in his derivation of Shor's factoring result \cite{kitaev}.
+
+\begin{displaymath}
+U\ket{\psi_k} = e^{2\pi i \phi_k} \ket{\psi_k}
+\end{displaymath}
+
+Phase estimation holds some superposition of eigenstates
+$\sum_{i} \alpha_i \ket{\psi_i}$
+in an $n$-qubit target register, to which it applies repeated measuring
+operators $\Lambda(U^{2^k})$
+controlled on some $t$-qubit register, which holds an
+approximation $\tilde{phi}$ to the real phase $\phi$.
+The unitary $U$ is applied in successive powers of two to get
+power-of-two multiples of the phase for increased precision.
+The error probability of approximating the phase to within a given
+precision is given by the following:
+
+\begin{displaymath}
+\Pr\left[ | \phi - \tilde{phi} | \ge \delta \right] \le \epsilon
+\end{displaymath}
+
+The parameter $t = t(\delta, \epsilon)$ encodes the dependence of the number
+of $\Lambda(U)$ measuring operators as a function of our desired
+$\delta$ and $\epsilon$.
+It varies according to the exact phase estimation procedure
+used.
+
+The popular version of phase estimation presented in \cite[nc00],
+requires $t$ repeated controlled applications of some unitary
+$U$ (and its successive powers as $U^{2^k}$, $0<k<2^t$)
+to a target state which holds some superposition of its eigenvectors,
+controlled by $t$ bits which will hold the approximation to a corresponding
+eigenvalue (phase).
+This version requires applying an inverse quantum Fourier
+transform (QFT), which is already high-depth and way more inefficient than our
+desired quantum compiler.
+
+To achieve our desired low-depth, we can ``parallelize'' the application of
+$\Lambda(U)$ by interpreting the
+$t = (n-2)s$ control bits as an $n$-bit number $q$ and
+apply $\Lambda(A^q)$ only once.
+In the Super-Kitaev procedure, $A$ is the addition operator on an $n$ qubit
+target register containing $\psi_{n,k}$, so we can
+only effectively add the lowest $n$ bits of $q$.
+Furthermore, the eigenvalues of $A$ are rational with a fixed
+denominator, $\phi_k = k / 2^n$.
+To avoid the inverse QFT,
+we can do a classical postprocessing step, which we'll mostly skip over
+for fairly good reasons, and then we'll do a detailed resource count of
+parallelized phase estimation.
+
+\subsection{Classical Postprocessing}
+
+It is now the point to mention that Kitaev's phase estimation procedure
+contains a post processing step which is completely classical in
+character, in that they involve a measurement. If this measurement is
+projective and the outcomes are completely classical, the remaining steps
+can be done on our classical computer (recall our quantum coprocessor model),
+and the results fed back into our quantum subroutine, registered
+phase shifting. Therefore, as long as we can perform these classical
+algorithms in polynomial time (which we can), we don't really care
+about the equivalent circuit size and depth.
+
+The steps of classical postprocessing, which will determine some of the
+parameters in the earlier, quantum part of phase estimation are as follows.
+
+\begin{enumerate}
+
+\item
+Estimate the phase and its power-of-two multiples
+$2^j \phi_k$ to
+some constant, modest precision $\delta''$, where
+$0 \le j < (n+2)$. For each $j$, we
+apply a series of $s$ measuring operators targeting the state $\ket{\nu}$
+controlled on $s$ qubits in the state $(\ket{0}+\ket{1})/\sqrt{2}$,
+essentially encoding the $2^j \phi_k$ as a bias in a coin, and flipping the
+coin $s$ times in a Bernoulli trial, counting the number of $1$ outcomes,
+and using that fraction to approximate the real $2^j \phi_k$.
+\item
+Sharpen our estimate to exponential precision $1/2^(n+2)$ using the
+$(n+2)$ estimates, each for different bits in the binary expansion of
+$phi_k$. Multiplication by successive powers-of-two shift these bits
+up to a fixed position behind the zero in a binary fraction representation,
+where we can use a finite-automata and a constant number of
+bits to refine our $O(n)$-length running approximation.
+\end{enumerate}
+
+Three things are worth mentioning about the interrelation of the parameters
+between these two steps. Since our phases all have a denominator of $2^n$,
+there is no need to run the continued fractions algorithm on multiple
+convergents, as is the case with period-finding in Shor's factoring algorithm.
+Furthermore, the phases are $1/2^n$ apart, therefore it suffices to approximate
+the phases to within $1/2^{n+2}$ in order to break ties, which is where
+our range for $j$ comes from above.
+
+The number of trials $s$ comes from the Chernoff bound:
+
+\begin{displaymath}
+\Pr \left[ | s^{-1}\sum_{r=1}^s v_r - p_* | \ge \delta'' \right]
+\le 2e^{-2\delta'^2 s}
+\end{displaymath}
+
+Setting this equal to the desired error probabiliy $\epsilon$ we get
+
+\begin{displaymath}
+s = \frac{1}{2\delta''^2}\ln \frac{1}{\epsilon}
+\end{displaymath}
+
+We are actually estimating the values $\cos(2\pi \cdot 2^j \phi_k)$ and
+$\sin(2\pi \cdot 2^j \phi_k)$, so if we wish to know $2^j \phi_k$ with
+precision $\delta''$, we actually need to determine the $\cos(\cdot)$ and
+$\sin(\cdot)$ values with a different precision $\delta'$, lower-bounding
+it with the steepest part of the cosine and sine curves.
+
+\begin{displaymath}
+\delta' = 1 + cos(\pi - \delta'')
+\end{displaymath}
+
+The factor $\frac{1}{2\delta''^2}$ depends on the constant precision with
+which we determine our $2^j \phi_k$ values. Since classical time is
+cheap and quantum gates are expensive, it makes sense to minimize the number
+of trials $s$. The following table shows the corresponding values of $1/(2\delta''^2)$
+and $\delta'$ as a function of various choices for $\delta'$.
+
+\begin{tabular}{|c|c|c|}
+\hline
+$\delta''$ & $\delta'$   & $1/(2\delta''2)$\\
+\hline
+$1/16$     & $0.0019525$ & $131,160$\\
+$1/8$      & $0.0078023$ & $  8,213$\\
+$1/4$      & $0.0310880$ & $    517$\\
+\hline
+\end{tabular}
+
+By making our $\delta'$
+exponentially worse (doubling it) we are only increasing the range of
+$j$ a linear amount (by one). In general, for $\delta'=1/2^l$, we get
+a final estimate for $\phi = 2^{m-3}$
+
+However, projective measurements are irreversible, and we may wish to
+uncompute the phase estimation procedure to restore our ancilla to
+their initialized state and reuse them later on. In that case, the
+postprocessing can actually be done on a quantum computer using
+reversible gates and without projective measurements. That's why
+the authors of \cite{ksv02} go to some care to show that all the classical
+postprocessing steps can be done in polynomial-size and logarithmic-depth
+circuit.
+However, to simplify our analysis, we assume the case
+in the previous paragraph, and accept the
+loss of $n$ ancilla qubits, After all, we only run phase estimation once
+to get our initial $\ket{\psi_{n,1}}$ state.
+
+\subsection{Steps in the Parallelized Phase Estimation Algorithm}
+
+The main steps in parallelized phase estimation as applied to Super-Kitaev
+are:
+
+\begin{enumerate}
+
+\item Begin with a $t$-qubit ancilla register initialized to $\ket{0}^{\otimes t}$.
+\textsc{Resources} $= [0,0,0,0,0,t]$
+
+\item Place the $t$-qubit register into an equal superposition by
+applying $n$ Hadamard gates. \textsc{Resources} $= [0,0,0,n,1,0]$
+
+\item Treat $t$ as $2s$ groups of bits, each encoding an $n$-bit number.
+Sum them up out-of-place, retaining only the lowest $n$-bits,
+to get the superposition
+of all $n$-bit numbers, $1/(\sqrt{2^{n}}) \sum_{i=0}^{2^n-1} \ket{q_i}$.
+Call this register $\ket{q_i}$.
+\textsc{Resources} $= ADD-OUT(2s \times n)$
+
+\item Reverse the first step by applying another $n$ Hadamards.
+\textsc{Resources} $= [0,0,0,n,1,0]$
+
+\item Apply the gate $\Upsilon(A)$ to the target $\ket{\nu}$ controlled
+on $\ket{q_i}$, which is equivalent to adding all $q_i$ in superposition
+(in place).
+\textsc{Resources} $= ADD-IN(2 \times n)$
+
+\item Measure the register $\ket{q_i}$ in the computational basis to get 
+a particular value $q$ and collapse the register to $\ket{q}$. All $t=(n-2)s$
+now contain classical $0$ or $1$ as outcomes of $(n-2)s$ Bernoulli trials.
+
+\item Read out these outcomes into our classical controller
+and perform the postprocessing
+described above to get an approximation of $phi$ with precision $\delta$.
+
+\end{enumerate}

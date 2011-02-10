@@ -1,0 +1,123 @@
+\subsection{Controlled-Phase Shift}
+\label{subsec:phase-shift}
+
+Now we are down to the standard set $\mathcal{Q}$, plus that pesky
+controlled-phase-shift gate $\Lambda{e^{i\phi}}$. This is in general a hard
+gate to implement, and one of the reasons why we need a quantum compiler in
+the first place!
+
+We could just use normal Solovay-Kitaev and find some sequence of $X$ and
+$Z$ gates which implement $\Lambda{e^{i\phi}}$, but that wouldn't be any
+fun and we would have no reason to bring in all this extra machinery to
+do Super-Kitaev.
+
+Note that in general we can't exactly implement $\Lambda{e^{i\phi}}$ but we
+can approximate it as $\Lambda{e^{2\pi i l / 2^n}}$, where $l$ is an integer.
+In general this is a special case of the following operator
+defined by Kitaev in the following lemma.
+
+\begin{theorem}[Lemma 13.4]
+The operator 
+$\Upsilon_n(e^{2\pi i / 2^n}) : \ket{l} \rightarrow e^{2\pi i l / 2^n} \ket{l}$
+for $0 \le l < 2^n$ can be realized with precision $\delta = 2^{-n}$ by an
+$O(n^2 \log n)$-size $O((\log n)^2)$-depth circuit over the standard basis
+using ancillas.
+\end{theorem}
+
+\begin{proof}
+To get started, we will need to introduce a magic state $\ket{\psi}$ with the
+integer parameters $n$ and $k$ such that
+
+\begin{equation}
+\ket{\psi_{n,k}} = \frac{1}{\sqrt{2^n}-1} \sum_{j=0}^{2^n-1} e^{2\pi i j k / 2^n} \ket{j}
+\end{equation}
+
+where $0 \le k < 2^n$, $k$ is odd.
+
+What is interesting to note about this state is that we can enact a phase
+shift simply by doing addition. In fact, addition is so useful in Super-Kitaev
+that we will later discuss a parallelized adder circuit which, however,
+is generic enough to be useful in other quantum algorithms.
+
+%What we need instead is to make use of the index-dependent
+%phases of each state, and addition to move to the right phase that we want,
+%and easy creation of a superposition of these magic states.
+
+Note that this magic state is an eigenstate of the addition operator defined
+by $A : \ket{j} \rightarrow \ket{(j+1) mod 2^n}$
+ 
+\begin{equation}
+A\ket{\psi_{n,k}} = e^{2\pi i \phi_k / 2^n} \ket{\psi_{n,k}}
+\end{equation}
+
+where finding the eigenvalue $e^{2\pi i \phi_k}$ corresponds to finding
+the phase $\phi_k = k / 2^n$
+
+Repeated application of $A$ (say $p$ times) would result in a phase
+added to the eigenstate equal to a multiple of $e^{2\pi i p / 2^n}$
+
+\begin{equation}
+A^p\ket{\psi_{n,k}} = e^{2\pi i \phi k / 2^n} \ket{\psi_{n,k}}
+\end{equation}
+
+To realize our desired operator $\Upsilon_n{e^{2\pi i / 2^n}}$ it suffices
+to use the value of $l$ to compute $p$ and then apply the operator:
+
+\begin{equation}
+\Upsilon_n(X) : \ket{p,j} \rightarrow \ket{p, (j+p) \mod 2^n}
+\end{equation}
+
+for $p,j \in {0,\ldots,2^n-1}$. That is, two $n$-qubit registers contain
+the values $p$ and $j$.
+
+Ideally, we would just create $\ket{\psi_{n,k}}$ for some particular $k$
+($k=1$ would be ideal). Then we would know exactly which $\ket{\psi_{n,k}}$
+we had, and how many times $p$ to apply the $A$ operator
+to enact the desired phase shift, where $p$ is the solution to the
+following equation:
+
+\begin{equation}
+\label{eqn:kp}
+kp \equiv l (\mod 2^n)
+\end{equation}
+
+Note that we stipulate $k$ to be odd so that there is a unique solution $p$.
+
+Recall now that the magic states $\ket{\psi}$ look suspiciously like a
+Quantum Fourier Transform state of the computational basis.
+However that doesn't help us here, because QFT is way too complicated to use as
+our basic compiler. This is intuitively why these states are hard to create.
+If we were able to construct them easily, we would also have a quicker way
+of implementing QFT.
+
+However, what we can do is create a superposition over all odd $k$ in the
+following way:
+
+\begin{equation}
+\ket{\eta} = \normtwo \ket{0} - \normtwo \ket{2^{n-1}} =
+\frac{1}{\sqrt{2^{n-1}}} \sum_{s=1}^{2^{n-1}} \ket{\psi_{n,2s-1}}
+\end{equation}
+
+Now then here are the required steps.
+
+\begin{enumerate}
+\item Create the state $\ket{\eta}$ by starting in the state $\ket{0}^{\otimes n}$,
+applying a Hadamard to the most significant qubit to get an equal mix of $\ket{0}$
+and $\ket{1}$, then put a negative sign on the $\ket{1}$ component by applying
+$\sigma^z$ to the same qubit.
+\item Measure $k$ by determining the phase $\phi_k = k/2^n$ with precision
+$\delta = 2^{-n}$ by using phase estimation. One of the $n$-qubit registers
+now contains $\ket{\psi_{n,k}}$ for some fixed $k$.
+This is done by a circuit of size $O(n^2)$ and depth $O(\log n)$.
+\item Solve for $p$ as a function of $k$ and $l$ satisfying Equation \ref{eqn:kp}
+\item Apply $X^p$ to the $n$-qubit register containing $\ket{\psi}$, which
+enacts the desired phase shift.
+\item Reverse the first three steps to uncompute $p$
+\end{enumerate}
+
+Note that we skimmed over the solution to Equation \ref{eqn:kp} even though this
+is the most resource-intensive part of the algorithm. Rest assured, it reduces
+to division (or computing the inverse of $2s-1 \mod 2^n$) which Kitaev
+provides an efficient solution to as Problem 2.14a in his book.
+
+\end{proof}
