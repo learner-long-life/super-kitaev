@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*~
+*.bbl
+*.blg
+*.log
+*.out
+*.aux
+\#*\#
