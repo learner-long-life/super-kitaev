@@ -32,13 +32,16 @@ defined as $l = \lceil \log_2 n \rceil$.
 In the gate counts below, we will include the counts of single-qubit NOT, or X,
 gates, which is used to negate the control of controlled-NOTs or Toffoli's.
 
-\begin{displaymath}
-\Qcircuit @C=2em @R=1.5em {
-& \ctrlo{1} & \qw & =  & & \qw & \targ & \ctrl{1} & \qw &\\
-& \targ     & \qw &    & & \qw & \qw   & \targ    & \qw &
-}
-\end{displaymath}
+% \begin{figure}
+% \begin{displaymath}
+% \Qcircuit @C=2em @R=1.5em {
+% & \ctrlo{1} & \qw & =  & & \qw & \targ & \ctrl{1} & \qw &\\
+% & \targ     & \qw &    & & \qw & \qw   & \targ    & \qw &
+% }
+% \end{displaymath}
+% \end{figure}
 
+\begin{figure}
 \begin{displaymath}
 \Qcircuit @C=2em @R=1.5em {
 & \ctrlo{1} & \qw & =  & & \qw & \targ & \ctrl{1} & \qw &\\
@@ -46,6 +49,8 @@ gates, which is used to negate the control of controlled-NOTs or Toffoli's.
 & \targ     & \qw &    & & \qw & \qw   & \targ    & \qw &
 }
 \end{displaymath}
+\caption{Negative control of multiply-controlled NOT gates}
+\end{figure}
 
 To compare the relative complexity of implementing the Toffoli gate versus
 CNOT and single-qubit gates, we can consider the following implementation

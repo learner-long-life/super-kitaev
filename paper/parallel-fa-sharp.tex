@@ -1,6 +1,29 @@
 \section{Parallelized Phase Sharpening}
 \label{sec:sharp}
 
+Another surprising application of finite automata and its parallel
+iteration is in sharpening an estimate of phases (eigenvalues) of
+a unitary operator.
+Phase estimation is an important part of
+many quantum algorithms, including Shor's algorithms for factoring and
+finding discrete logarithms and solving systems of linear equations.
+
+Phase sharpening is one of the classical postprocessing steps in Kitaev's
+phase estimation procedure described on p. [to be added] of \cite{ksv02}.
+The remarkable result of phase sharpening is that given many modest
+estimates (say within $1/8$) of a phase $\phi$ and its multiples $2^{j}\phi$
+by $2n$ successive powers of two, we can ``sharpen'' this result into
+an estimate of $\phi$ of exponential precision using only a finite automata.
+
+That is, at every step of this procedure, we only need to compare a
+constant amount of bits among these modest estimates to get our
+arbitrarily precise result.
+
+\subsection{The Finite Automata Function Tables}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{table}
 \begin{tabular}{|c|c|c||c|c||c|}
 \hline
 $\beta_j$ & $\alpha_{j+1}$ & $\alpha_{j+2}$ & $\overline{\beta_j}$ & $\overline{\alpha_j\alpha_{j+1}\alpha_{j+2}}$ & $\alpha_j$\\
@@ -46,5 +69,6 @@ $\beta_j$ & $\alpha_{j+1}$ & $\alpha_{j+2}$ & $\overline{\beta_j}$ & $\overline{
     & 1 & 1 &               & $\frac{7}{8}$ & 1\\
 \hline
 \end{tabular}
-
-\subsection{Resource Requirements for Phase Sharpening}
+\caption{Transition function table for phase sharpening}
+\end{table}
+\end{center}

@@ -1,13 +1,14 @@
 \documentclass{article}
 
-\usepackage{times}
-\usepackage{fullpage}
-\usepackage{eprint}
-\usepackage{rotating}
-\usepackage{eepic}
+%\usepackage{times}
+%\usepackage{fullpage}
+%\usepackage{eprint}
+%\usepackage{rotating}
+%\usepackage{eepic}
 \usepackage{amsfonts}
-\usepackage{algorithmic}
+%\usepackage{algorithmic}
 \usepackage{amsthm}
+%\usepackage{xy}
 
 %\tocdetails{%
 %   volume=0, number=5, year=2005, firstpage=78,
@@ -39,55 +40,21 @@
 
 \maketitle
 
-\section{Introduction}
+\input{parallel-fa-abstract}
 
-In \cite{KSV2002}, the authors describe the development of parallelized
-iteration of finite automata, which they later use in a low-depth, highly-
-parallel simulation of quantum gates (quantum compiling). We call this
-quantum compiling
-scheme the Super-Kitaev procedure in contrast to the normal
-Solovay-Kitaev construction as described in \cite{nc00}.
-However, in these notes, we describe
-this method of parallelized iteration as a useful tool in its own right,
-even if you don't care about quantum compiling or quantum computing at all.
-Finite automata (FA) are useful for computing all kinds of classical functions,
-which is how they are used in Super-Kitaev, albeit in a reversible fashion
-with the possibility of feeding in quantum inputs and getting out quantum
-outputs, in the most general case.
-But the idea of parallelizing FA iteration can also be used in an
-efficient classical implementation that could be parallelized on modern
-multi-core processors. It also demonstrates that we can achieve an
-exponential speedup in depth (from linear depth of normal, serial iteration to
-logarithmic depth of parallel iteration) using only a polynomial overhead in
-gates required in the circuit model.
+\input{parallel-fa-intro}
 
-These notes will develop our general (quantum) model of finite automata, the actual
-sequence of gates required, and resource requirements for circuit size,
-circuit depth, and ancillae qubits required. We will then
-apply this model to two particular instances of FA-computable functions useful in
-Super-Kitaev: adding and phase sharpening. We will calculate the actual resources
-required for a wide range of input sizes to give us some intuition about the
-asymptotic tradeoffs and multiplicate constants involved. These are normally
-neglected in theoretical descriptions, but are of interest to engineers
-when it comes time to design and build an actual implementation. We will closely
-follow the development in \cite{KSV2002}, to which the interested reader is
-referred for a more concise, self-contained description of the Super-Kitaev
-algorithm and its sub-modules.
+\input{parallel-fa-model}
 
-\section{The Quantum Model of a Finite Automata}
+\input{parallel-fa-notation}
 
-\subsection{Resource Requirements for General Quantum Finite Automata}
+\input{parallel-fa-steps}
 
-\section{Parallelized Adding}
+\input{parallel-fa-add}
 
-\subsection{Resource Requirements for Adding}
+\input{parallel-fa-sharp}
 
-\section{Parallelized Phase Sharpening}
-
-\subsection{Resource Requirements for Phase Sharpening}
-
-\section{Conclusion}
-\subsection{Resource Requirements for General Quantum Finite Automata}
+\input{parallel-fa-conclude}
 
 \bibliography{report}
 \bibliographystyle{tocplain}
