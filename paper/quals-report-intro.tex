@@ -1,6 +1,11 @@
 \section{Introduction}
 
-Quantum computers can do some pretty amazing things in theory, but how
+Quantum computers can do some pretty amazing things in theory: they
+can break the RSA cryptosystem using Shor's factoring algorithm,
+ensure perfectly private communication,
+do unstructured search, solve random walks, and
+simulate quantum physical systems much more efficiently than classical
+computers. But how
 do we bridge the gap between algorithms that run on paper and those that
 will soon run on actual machines being built in laboratories as we speak?
 One important step in that direction is \emph{quantum compiling}, the
@@ -13,37 +18,38 @@ gates operating on qubits in the quantum circuit model.
 We can treat gates operating on an $n$-qubit quantum computer as unitary
 matrices of dimension $2^n \times 2^n$ with unit determinant.
 However, in experimental settings,
-we can only perform some gates efficiently, and these are usually local,
-2-qubit operations. Moreover, most of our results for fault-tolerant
+we can only perform some gates efficiently, and these are local
+two-qubit or single-qubit operations.
+Moreover, most of our results for fault-tolerant
 quantum computing in the presence of noise stipulates that we have a finite
 number of universal gates we can perform with some limited precision.
 
-How then, do we translate our quantum algorithms into something that can run
-on hardware? In analogy to classical computers, we describe this translation
-as {\em quantum compiling}. One of the central results of quantum computing,
-and the reason why it is interesting, is that we can actually perform this
-quantum compiling efficiently. This first result is called the
-Solovay-Kitaev theorem \cite{Dawson2005}, which provides an efficient way to
-approximate any quantum gate. I presented this algorithm in an earlier talk, but
-I'll briefly review the results here. However, the constants for this method
-scale exponentially with the number of qubits and involve an intractably
-large preprocessing step.
+Two quantum compiling algorithms are currently known. The first algorithm,
+by Solovay and Kitaev \cite{Dawson2005},
+is one of the central results of quantum computing which states that we
+can approximate quantum gates efficiently without losing any performance
+gains over classical computers.
+The second result, which is more recent but much less well-known, improves
+Solovay-Kitaev by making a time-space tradeoff and using parallelism
+\cite{ksv02}.
+Therefore, we call it Super-Kitaev (a name originated by Aram Harrow).
 
-The second result is more recent but much less well-known, and is called
-the Super-Kitaev algorithm (named by Aram Harrow). This new method improves upon
-the bounds for compiled circuit size over the normal Solovay-Kitaev algorithm,
-but comparison is more complicated. Super-Kitaev introduces some new tradeoffs to the
-comparison, such as ancillary qubits and classical postprocessing. In doing so,
-Kitaev also gives us some interesting modules which are worth studying for
-their own sake. In these notes, we will outline the Super-Kitaev algorithm at
-a high-level to develop some intuition about why it works, describe how we 
-might implement it in practice.
+This work contributes the calculation of physical resources needed
+to run these two quantum compiling algorithms, open source code to duplicate
+these results available at \texttt{http://quantum-compiler.org},
+and much needed publicity for Super-Kitaev.
 
-I'll use words familiar to classical digital computers, like compiler and
-runtime, but applied to the new and unfamiliar setting of quantum computing.
-Hopefully this will make the trip both easier and more strange and
-wonderful for you.
-
-Although this is an introduction, I won't be introducing quantum computation
-and its notation at all. Sorry.
-For that, I defer to the best-selling \cite{nc00}.
+The rest of this report is organized as follows.
+First things first, Section \ref{sec:prelims} defines terms and parameters
+so that we can discuss quantum compilers with some precision as well as
+giving asymptotic bounds for specific algorithms.
+Then Section
+\ref{sec:related} gives a brief history of quantum compiling.
+The next two sections describe the two compiling algorithms and how
+to measure their relative performance.
+Section \ref{sec:sk-algo} reviews the original Solovay-Kitaev result and
+Section \ref{sec:main-algo} describes Super-Kitaev along with its
+most resource-intensive modules. Section \ref{sec:methods} describe
+our methods for the performance comparisons, which are given in Section
+\ref{sec:results}. Finally, we make some comments about these results
+and suggest future directions for extending this work. Ready? Let's go.

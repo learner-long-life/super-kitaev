@@ -1,7 +1,9 @@
 \section{Review of Solovay-Kitaev}
+\label{sec:sk-algo}
 
-Here I'll remind you of the basic pseudo-code for normal Solovay-Kitaev.
-Our development is taken from the excellent review paper \cite{Dawson2005}.
+The essential structure of Solovay-Kitaev is recursive, successive
+approximation. Our pseudo-code and explanation
+follows the excellent exposition in \cite{Dawson2005} and \cite{harrow01}
 
 \begin{algorithmic}[1]
 \STATE \textsc{function} $\tilde{U}_n \leftarrow$ SOLOVAY-KITAEV$(U,n)$
@@ -17,11 +19,10 @@ Our development is taken from the excellent review paper \cite{Dawson2005}.
 return $\tilde{U}_n$
 \end{algorithmic}
 
-This algorithm works by way of recursive, successive approximation.
-
 The BASIC-APPROX function above does a lookup (via some kd-tree search
 maneuvers through higher-dimensional vector spaces) using the results of
-precompiled sequences from the instruction set $\mathcal{G}$. This can be
+precompiled sequences from $\mathcal{G}$.
+This can be
 done offline and reused across multiple runs of the compiler, assuming
 $\mathcal{G}$ for your quantum computer doesn't change.
 
@@ -33,4 +34,8 @@ $\epsilon$) are symmetric and cancel out in such a way that the resulting
 product $U$ has errors which go like $\epsilon^2$. In this manner, we can
 eventually sharpen our desired error down to any value.
 
-And that's all I'm going to say about that.
+Each level $n$ of recursion solves the problem of compiling 
+$U_n$ by combining five gates compiled at the lower $n-1$ level.
+Therefore, the compiled circuit size is upper-bounded by $5^n$, and
+this is in general the same as the circuit depth (since not all gates in the
+$\mathcal{G}$ commute).

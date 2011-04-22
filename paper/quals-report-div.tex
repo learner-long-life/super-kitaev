@@ -1,17 +1,14 @@
-\section{Quantum Divider}
+\subsection{Quantum Divider}
+\label{subsec:div}
 
 The most resource-intensive step of the registered phase shift operation
-is solving $p = p(s,l)$ for a given resulting
+is solving $p = p(s,l)$ in Equation
+\ref{eqn:psl} for a given resulting
 eigenvector $\ket{\psi_{2s-1}}$ after phase estimation and a desired
-phase shift $exp(2\pi i l / 2^n)$. Solving the equation
-$(2s-1)p \equiv \mod 2^n$ involves finding a modular inverse, which
-we can convert to the following product.
-
-To solve for $p$, we have
-
-\begin{displaymath}
-p = (2s - 1)^{-1} l \mod 2^n
-\end{displaymath}
+phase shift $exp(2\pi i l / 2^n)$.
+This involves finding a modular inverse, which
+we can convert to a product of sums (addition and multiplication,
+which we already know how to do efficiently).
 
 To find $y = (2s-1)^{-1} \mod 2^n$, it should have the property
 $y \cdot (2s-1) \equiv 1 \mod 2^n$ or equivalently
@@ -55,7 +52,7 @@ p = -yl \mod 2^n = -l \prod_{r=1}^{\lceil \log n \rceil -1} (1 + (2s)^{2^r})
 
 The resource counts for this modular division is equivalent to:
 
-\begin{displaymath}
-\text{DIV-MOD}(n) = \lceil \log n \rceil \cdot \text{MULT-2}(n) +
- (\lceil \log n \rceil - 1) \cdot \text{ADD-IN}(2, n)
-\end{displaymath}
+\begin{multline}
+\text{DIV-MOD}(n) = \lceil \log n \rceil \cdot \text{MULT-2}(n) + \\
+ (\lceil \log n \rceil - 1) \cdot \text{ADD}(2, n)
+\end{multline}

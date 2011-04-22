@@ -1,4 +1,5 @@
-\section{Quantum Multiplication}
+\subsection{Quantum Multiplication}
+\label{subsec:mult}
 
 Now that we know how to add quantum numbers efficiently, we can use this
 to implement a similarly low-depth multiplication circuit.
@@ -24,5 +25,5 @@ that we don't need to include in our sum.
 We define the resource counts of in-place multiplication as follows.
 
 \begin{displaymath}
-MULT-2(n) = ADD-IN(n, n) + n(n+1)/2 ancillae
+MULT-2(n) = ADD(n, n) + n(n+1)/2 \text{ancillae}
 \end{displaymath}

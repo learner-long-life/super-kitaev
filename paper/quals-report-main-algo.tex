@@ -1,49 +1,86 @@
-\subsection{The Main Algorithm}
-\label{subsec:main}
+\section{The Main Algorithm}
+\label{sec:main-algo}
 
-Now assuming we have parallelized phase estimation as a black box, here are
-the steps to the Super-Kitaev algorithm.
+The Super-Kitaev algorithm takes a radically different approach than
+Solovay-Kitaev by identifying that most gates can be easily reduced to
+$\mathcal{G}$ in constant time with the exception of the ``targetless''
+controlled phase operator, which will take some sweat to approximate.
 
-\begin{theorem}[Theorem 13.5]
-Any circuit $C$ of size $L$ and depth $d$ over a fixed finite basis can be
-simulated with precision $\delta$ by an $O(Ln + n^2\log n)$-size
-$O(d \log n + (\log n)^2)$-depth circuit $C'$ over the standard basis, where
-$n = O(\log(L/\delta))$.
-\end{theorem}
+\begin{displaymath}
+\Lambda(e^{i\phi}) = 
+ \left(
+  \begin{array}{cc}
+    1 & 0 \\
+    0 & e^{i\phi} \\
+  \end{array} \right)
+\end{displaymath}
 
-\begin{proof}
+Thankfully \cite{ksv02} is a self-contained reference
+for enacting $\Lambda(e^{i\phi})$ with several modules which are useful in
+their own right:
+parallelized phase estimation procedure, parallel iteration of finite
+automata, and a logarithmic depth quantum arithmetic operations such
+as addition (and subtraction) described in \ref{subsec:add},
+multiplication described in \ref{subsec:mult}, and division described
+in \ref{subsec:div}.
 
-For the steps below, we note that we can avoid solving the equation $kp \equiv l (mod 2^n)$
-if we set $k=1$. This is equivalent to realizing $\Upsilon_n(e^{2\pi i / 2^n})$
-by applying $\Upsilon(A)$ from Section \ref{subsec:phase-shift} to the state
-$\ket{\psi_{n,1}}$. So we need to create one copy of this magic state to
-simulate each $\Lambda(e^{i\phi})$ gate, possibly up to $L'$ of them.
+It is now useful to discuss certain states with magical properties.
+Their superposition is easy to form, they are the eigenstates of the
+afore-mentioned
+addition operator. Used with phase estimation, this would allow us to enact
+a random phase shift simply by adding numbers, which is better than not
+being able to shift phases at all (or only being able to do it with a
+complicated operator). Moreover, it turns out we can copy these states
+also using simple addition. These ideas make Super-Kitaev a beautiful result
+regardless of the outcome of our later numerical comparisons.
+
+\input{quals-report-magic-state}
+
+%For the steps below, we note that we can avoid solving the equation $kp \equiv l (mod 2^n)$
+%if we set $k=1$. This is equivalent to realizing $\Upsilon_n(e^{2\pi i / 2^n})$
+%by applying $\Upsilon(A)$ from Section \ref{subsec:phase-shift} to the state
+%$\ket{\psi_{n,1}}$. So we need to create one copy of this magic state to
+%simulate each of $m$ $\Lambda(e^{i\phi})$ gates, $m \le L'$.
+
+
+\subsection{Super-Kitaev Steps}
+
+Given a circuit $C$ to compile,
 
 \begin{enumerate}
-\item Precompile the circuit into gates from $\mathcal{Q} \cup \{\Lambda(e^{i\phi})\}$
-using the results from Section \ref{subsec:precompile}.
-\item Create the state magic state $\ket{\psi_{n,0}} = H^{\otimes n}\ket{0^n}$
+\item Precompile $C$ into gates from $\mathcal{G} \cup \{\Lambda(e^{2\pi i l / 2^n})\}$
+using the results from Section \ref{subsec:precompile} in $O(1)$ time, depth,
+and size.
+Now we are done with the single-qubit gates and CNOT, and we have computed
+the values $\{l_1, \ldots , l_m\}$ that allow us to approximate our
+desired $m$
+$\Lambda(e^{i\phi})$ gates as $\phi \approx l/2^n$ to within precision
+$2^{-n}$.
+\item Create the state magic state $\ket{\psi_{n,0}}$ with $n$ Hadamards.
 \item Turn it into $\ket{\psi_{n,1}} = \Upsilon(e^{-2\pi i / 2^n}) \ket{\psi_{n,0}}$
-using the procedure in Section \ref{subsec:phase-shift}
+using the registered phase shift procedure in Section \ref{subsec:phase-shift}
 This is done with a circuit of size $O(n^2\log n)$ and $O((\log n)^2)$ depth.
-\item Make $L'$ copies of the state $\ket{\psi_{n,1}}$ out of one copy by 
-apply the addition operation below.
-\item Simulate the circuit $C'$ using one copy of $\ket{\psi_{n,1}}$ per gate,
-this takes size $O(n)$ and depth $O(\log n)$.
-\item Reverse the first three steps.
+\item Make $m$ copies of the state $\ket{\psi_{n,1}}$ out of one copy by 
+applying the addition operation $A$.
+\item Simulate each $\Lambda(e^{2\pi i l / 2^n})$
+using one copy each of $\ket{\psi_{n,1}}$, to which we can add our
+values $l$ using $\Upsilon(A)$.
+This takes size $O(mn)$ and depth $O(\log n)$, since we can enact
+all these phase shifts in parallel.
 \end{enumerate}
 
-To copy the state $\ket{\psi_{n,k}}$ it suffices to apply the following
-operator:
+Now for the resource calculations of these individual steps and their
+substeps.
 
-\begin{equation}
-\ket{\psi_{n,k}}^{\otimes m} = W^{-1}\left( \ket{\psi_{n,0}}^\otimes(m-1) \otimes \ket{\psi_{n,k}} \right)
-\end{equation}
+\input{quals-report-precompile}
 
-where $W$ is defined by
+\input{quals-report-phase-shift}
 
-\begin{equation}
-W : \ket{x_1,\ldots,x_{m-1},x_m} \rightarrow \ket{x_1,\ldots,x_{m-1},x_1+\ldots+x_m}
-\end{equation}
+\input{quals-report-phase-estimate}
 
-\end{proof}
+\input{quals-report-add}
+
+\input{quals-report-mult}
+
+\input{quals-report-div}
+

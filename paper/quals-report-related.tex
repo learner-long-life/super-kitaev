@@ -1,4 +1,5 @@
 \section{Related Work}
+\label{sec:related}
 
 In 1995, Seth Lloyd found that almost any two distinct single-qubit rotations are
 universal for approximating an arbitrary single-qubit rotation, but that this
@@ -9,21 +10,26 @@ The theorem which is now called Solovay-Kitaev was discovered by Solovay in
 Kitaev in 1997 \cite{nc00} which showed that $T,L = O(\log^c{1/\epsilon})$ for
 $c$ between 3 and 4.
 
-In 2001, Aram completed his undergrad thesis arguing that it would be difficult
-to beat $c < 2$ for the above bounds using a successive approximation method.\cite{harrow01}
+In 2001, Aram Harrow completed his undergrad thesis arguing that it would be difficult
+to beat $c < 2$ for the above bounds using a successive approximation
+method\cite{harrow01}.
 
 In 2002, Kitaev, Shen, and Vyalyi published their book which contains an
 application of parallelized phase estimation towards simulating a quantum
 circuit (what we are calling Super-Kitaev) \cite{ksv02}.
 That is, an alternative quantum compiler to Solovay-Kitaev which has
-asymptotically better circuit size and depth, but using ancillary qubits
-and having as yet unknown multiplicative constants.
+asymptotically better circuit depth and $T=O(1)$
+but using ancillary qubits and increased
+circuit size.
 
-In 2003, Aram, Ben Recht, and Ike demonstrated that a certain universal
+In 2003, Harrow, Recht, and Chuang demonstrated that a certain universal
 set could be used to saturate the lower bound $L=O(\log{1/\epsilon})$
 but it remains an open problem whether any efficient algorithm exists
 which can do this in tractable $T$ \cite{hrc02}.
 
-In 2005, Chris Dawson and Mike Nielsen published their pedagogical review
-paper which I used as the basis for my previous work on implementing a
-Solovay-Kitaev compiler \cite{Dawson2005}.
+In 2005, Dawson and Nielsen published their pedagogical review
+paper of Solovay-Kitaev \cite{Dawson2005}.
+
+In 2010, Burrello, Mussardo, and Wan discovered a quantum compiler for
+topological quantum computing which saturates the lower bound ($c=1$) for
+non-Abelian anyons \cite{Burrello2010}.

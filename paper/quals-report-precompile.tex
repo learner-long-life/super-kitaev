@@ -1,17 +1,10 @@
 \subsection{Precompiling to the Standard Set}
 \label{subsec:precompile}
 
-In order to perform the precompilation step, we need to know that we can
-change any unitary in $SU(d)$ by tensor products of unitaries in $SU(2)$
-and $SU(4)$, that is, single- and two-qubit gates.
-
-To prove the universality of the standard set $\mathcal{Q}$ is beyond the
-scope of these notes. For our purposes, we assume that we can precompile
-any gate down to single-qubit rotations $U \in SU(2)$ and
-controlled-single-qubit rotations $\Lambda(U), U\in SU(2)$.
-(For example, it's known how to do that for the Toffoli gate, which is what we
-need to implement our quantum adder circuit).
-From there, how do we get down to the standard set?
+This is the completely classical preprocessing step for Super-Kitaev which
+assumes we can express any $n$-qubit gate as a tensor product of
+single- and two-qubit gates.
+From there, how do we get down to our universal set?
 
 %\begin{theorem}[Lemma 8.2]
 %\label{lemma82}
@@ -42,42 +35,37 @@ From there, how do we get down to the standard set?
 %The running time of this algorithm is $O(M^3) \cdot \mathrm{poly}(\log(1/\delta)$.
 %\end{proof}
 
-\begin{theorem}[Problem 8.1]
-Any single-qubit gate $U$ can be simulated using $\mathcal{Q} \cup \{ \Lambda(e^{i\phi}) \}$.
-\end{theorem}
-
-\begin{proof}
-Using the Euler angle decomposition into $X$ and $Z$ rotations, we can express any
+We use the Euler angle decomposition into $X$ and $Z$ rotations,
+we can express any
 unitary $U$ as follows, with real angles $\phi$, $\gamma$, $\beta$, $\alpha$:
 
-\begin{equation}
+\begin{equation*}
 U = e^{i\phi}e^{i(\gamma/2)\sigma^z}e^{i(\beta/2)\sigma^x}e^{i(\alpha/2)\sigma^z}
-\end{equation}
-This involves solving four equations in four variables and can be done in constant time.
+\end{equation*}
+This involves solving four equations in four variables and can be done in
+constant time.
 
 Now how do we implement each of the elements of the Euler angle decomposition from
 the $\mathcal{Q}$? Using these identities:
 
-\begin{equation}
+\begin{equation*}
 e^{i\phi} = \Lambda(e^{i\phi})\sigma^x\Lambda(e^{i\phi})\sigma^x
-\end{equation}
-\begin{equation}
+\end{equation*}
+\begin{equation*}
 \sigma^x = H\Lambda(e^{i\pi})H
-\end{equation}
-\begin{equation}
+\end{equation*}
+\begin{equation*}
 e^{i\phi\sigma^z} = \Lambda(e^{-i\phi}\sigma^x\Lambda(e^{i\phi})\sigma^x
-\end{equation}
-\begin{equation}
+\end{equation*}
+\begin{equation*}
 e^{i\phi\sigma^x} = H e^{i\phi\sigma^z} H
-\end{equation}
-\end{proof}
+\end{equation*}
 
-\begin{theorem}[Problem 8.2]
-Any controlled operator $\Lambda(U)$ where $U \in SU(2)$ can be simulated using
+In addition,
+any controlled operator $\Lambda(U)$ where $U \in SU(2)$ can be simulated
+using
 $\mathcal{Q} \cup \{ \Lambda(e^{i\phi})$.
-\end{theorem}
 
-\begin{proof}
 We can represent the controlled operator as $\Lambda(U) = \Lambda(e^{i\phi})\Lambda(V)$.
 $\Lambda(e^{i\phi})$ is already in our set, so it remains to implement
 $\Lambda(V)$, where $V \in SU(2)$. Geometrically, we can decompose any
@@ -85,7 +73,6 @@ three-dimensional rotation into two $180^{\circ}$ rotations about appropriate
 axes. Using the homomorphism between $SO(3)$ and $SU(2)$ and the fact that
 $\sigma^x$ corresponds to a $180^{\circ}$ rotation about the $x$-axis.
 
-\begin{equation}
+\begin{equation*}
 V = A\sigma^x A^{-1} B\sigma^x B^{-1}
-\end{equation}
-\end{proof}
+\end{equation*}
