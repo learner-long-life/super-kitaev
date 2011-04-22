@@ -14,11 +14,11 @@ def encoded_add(m, n):
 	# depth of tree
 	depth = numpy.log(m) / numpy.log(1.5)
 	additions = math.floor(1.5**depth) # upper bound
-	print "additions= " + str(additions)
+	#print "additions= " + str(additions)
 
 	# Additions in the first level (maximum number of simultaneous additions)
 	first_level = math.floor(m / 3)
-	print "first_level= " + str(first_level)
+	#print "first_level= " + str(first_level)
 
 	resources['depth'] = math.ceil(depth) * 6
 	ancilla = 3*n*first_level

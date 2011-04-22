@@ -23,6 +23,18 @@ def create_empty_resources():
 	resources['cnot'] = 0
 	resources['single'] = 0
 	return resources
+
+def multiply_resources_with_ancillae(res, multiple):
+	resources = {}
+	for key in res.keys():
+		value = res[key]
+		 # we don't multiply depth
+		if (key == 'depth'):
+			resources[key] = value
+		else:
+			resources[key] = value * multiple
+	
+	return resources
 	
 def multiply_resources(res, multiple):
 	resources = {}

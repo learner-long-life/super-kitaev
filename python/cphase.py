@@ -30,7 +30,10 @@ def cphase(n, L_prime):
 	# We also need to simulate the cphase gates by adding the l values with DKRS
 	# These can be done in parallel
 	add_res = dkrs_add(n = n)
-	add_res = multiply_resources(add_res, L_prime)
+	#print "before multiply: " + str(add_res)
+
+	add_res = multiply_resources_with_ancillae(add_res, L_prime)
+	#print str(add_res)
 	
 	resources = combine_resources(resources, add_res)
 	

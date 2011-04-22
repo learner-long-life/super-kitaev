@@ -1,15 +1,17 @@
 from cphase import *
 
-L_prime = 8
+L_prime = 10000
 
 #print "L_prime= " + str(L_prime)
 
 depths = []
 
-for i in range(1,100):
+for i in range(1,40):
 	n_prime = i
 	resources = cphase(n=n_prime+2, L_prime = L_prime)
 	#print "n= " + str(n_prime+2)
 	#print "resources= " + str(resources)
-	#gates = (16*resources['toffoli']) + resources['cnot'] + resources['single']
-	print str(resources['ancilla'])
+	#gates = (6*resources['toffoli']) + resources['cnot']
+	print str(resources['depth'])
+	#print str(gates/L_prime)
+	#print str(resources['ancilla'])
