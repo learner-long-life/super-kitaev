@@ -1,0 +1,36 @@
+Kitaev-Shen-Vyalyi Quantum Compiling Algorithm
+http://quantum-compiler.org
+==============================================
+
+This is the source distribution for my qualifying project in the Ph.D.
+program at the University of Washington Department of Computer Science &
+Engineering.
+
+I numerically compared the resource requirements between the Solovay-Kitaev
+algorithm (based on the Dawson/Nielsen review paper) and the
+Kitaev-Shen-Vyalyi algorithm (based on the 2002 book by the same authors).
+
+Here are the tarball contents:
+Makefile       - to automate testing of QCL files, where I worked out exact gate
+                 sequences.
+adder          - QCL files to test quantum adder circuits
+elementary     - QCL files for elementary gate operations
+magic-state    - QCL files for manipulating magic states used in KSV algorithm
+paper          - LaTeX source files for my quals report.
+phase-estimate - QCL files for phase estimation procedure
+phase-shift    - QCL files for registered phase shifting
+plots          - Excel spreadsheets and CSV raw data for resource counts
+python         - Python code to simulate gate resources and produce CSV
+scratch        - QCL files for testing / prototypes
+utils          - QCL utility files
+
+The QCL code above uses the excellent quantum programming language / simulator
+by Bernhard Oemer.
+
+This is just a snapshot of the code at the time I submitted my quals project.
+Ongoing development and latest news will be reported at the URL above.
+
+Paul Pham
+ppham at local dash box dot org
+25 April 2011
+
