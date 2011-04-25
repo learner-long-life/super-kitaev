@@ -1,0 +1,84 @@
+// Test if we can "un-measure" the control qubits so that we can
+// uncompute the magic state back to zero
+
+include "magic-state/odd-superpose.qcl";
+include "phase-estimate/operator-x.qcl";
+include "utils/copy.qcl";
+
+int s=1;
+qureg B[4];
+int c;
+int i;
+int i1;
+int sum = 0;
+int j;
+int k;
+qureg instrument[s];
+qureg instrcopy[s];
+
+// Create a magic state to copy |\psi_{4,1}>
+CreateOddMagicSuperposition(B);
+
+// Mix the instrument / control qubit
+Mix(instrument);
+
+dump B;
+
+for i=0 to s-1 {
+	dump instrument[i];
+	j = 4*i;
+	k = 4*(i+1);
+	if (instrument[i]) {
+		operatorXInPlace(B, 2);
+	}
+	dump B;
+}
+
+// Unmix the instruments
+Mix(instrument);
+
+copy(instrcopy, instrument);
+
+dump instrument;
+dump instrcopy;
+
+// ****************************************************************************
+// Uncompute everything
+// Mix the instrument / control qubit
+Mix(instrument);
+
+dump B;
+
+for i=0 to s-1 {
+	i1 = s - i - 1;
+	dump instrument[i1];
+	j = 4*i1;
+	k = 4*(i1+1);
+	if (instrument[i1]) {
+		!operatorXInPlace(B, 2);
+	}
+	dump B;
+}
+
+// Unmix the instruments
+Mix(instrument);
+
+dump instrument;
+dump B;
+
+//*****************************************************************************
+
+// Now measure!
+
+for i=0 to s-1 {
+	measure instrcopy[i], c;
+	print "c= ", c;
+	if (c == 1) {
+		sum = sum + 1;
+	}
+	j = 4*i;
+}
+
+dump instrcopy;
+
+print "sum= ", sum;
