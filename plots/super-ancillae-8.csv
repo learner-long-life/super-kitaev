@@ -1,0 +1,78 @@
+{'ancilla': 32.0, 'depth': 15.0, 'toffoli': 136.0, 'single': 32, 'cnot': 56}
+7749.0
+{'ancilla': 40.0, 'depth': 17.0, 'toffoli': 192.0, 'single': 48, 'cnot': 88}
+12408.0
+{'ancilla': 56.0, 'depth': 18.0, 'toffoli': 248.0, 'single': 64, 'cnot': 120}
+18090.0
+{'ancilla': 72.0, 'depth': 19.0, 'toffoli': 328.0, 'single': 80, 'cnot': 152}
+24804.0
+{'ancilla': 88.0, 'depth': 20.0, 'toffoli': 408.0, 'single': 96, 'cnot': 184}
+32571.0
+{'ancilla': 96.0, 'depth': 21.0, 'toffoli': 464.0, 'single': 112, 'cnot': 216}
+41352.0
+{'ancilla': 112.0, 'depth': 22.0, 'toffoli': 520.0, 'single': 128, 'cnot': 248}
+51165.0
+{'ancilla': 128.0, 'depth': 22.0, 'toffoli': 600.0, 'single': 144, 'cnot': 280}
+62040.0
+{'ancilla': 144.0, 'depth': 22.0, 'toffoli': 680.0, 'single': 160, 'cnot': 312}
+73920.0
+{'ancilla': 160.0, 'depth': 23.0, 'toffoli': 760.0, 'single': 176, 'cnot': 344}
+86832.0
+{'ancilla': 176.0, 'depth': 24.0, 'toffoli': 840.0, 'single': 192, 'cnot': 376}
+100815.0
+{'ancilla': 192.0, 'depth': 24.0, 'toffoli': 920.0, 'single': 208, 'cnot': 408}
+115794.0
+{'ancilla': 208.0, 'depth': 24.0, 'toffoli': 1000.0, 'single': 224, 'cnot': 440}
+131805.0
+{'ancilla': 216.0, 'depth': 25.0, 'toffoli': 1056.0, 'single': 240, 'cnot': 472}
+148896.0
+{'ancilla': 232.0, 'depth': 26.0, 'toffoli': 1112.0, 'single': 256, 'cnot': 504}
+166974.0
+{'ancilla': 248.0, 'depth': 26.0, 'toffoli': 1192.0, 'single': 272, 'cnot': 536}
+186084.0
+{'ancilla': 264.0, 'depth': 26.0, 'toffoli': 1272.0, 'single': 288, 'cnot': 568}
+206283.0
+{'ancilla': 280.0, 'depth': 26.0, 'toffoli': 1352.0, 'single': 304, 'cnot': 600}
+227460.0
+{'ancilla': 296.0, 'depth': 26.0, 'toffoli': 1432.0, 'single': 320, 'cnot': 632}
+249669.0
+{'ancilla': 312.0, 'depth': 26.0, 'toffoli': 1512.0, 'single': 336, 'cnot': 664}
+272976.0
+{'ancilla': 328.0, 'depth': 26.0, 'toffoli': 1592.0, 'single': 352, 'cnot': 696}
+297252.0
+{'ancilla': 344.0, 'depth': 27.0, 'toffoli': 1672.0, 'single': 368, 'cnot': 728}
+322560.0
+{'ancilla': 360.0, 'depth': 28.0, 'toffoli': 1752.0, 'single': 384, 'cnot': 760}
+348975.0
+{'ancilla': 376.0, 'depth': 28.0, 'toffoli': 1832.0, 'single': 400, 'cnot': 792}
+376350.0
+{'ancilla': 392.0, 'depth': 28.0, 'toffoli': 1912.0, 'single': 416, 'cnot': 824}
+404757.0
+{'ancilla': 408.0, 'depth': 28.0, 'toffoli': 1992.0, 'single': 432, 'cnot': 856}
+434280.0
+{'ancilla': 424.0, 'depth': 28.0, 'toffoli': 2072.0, 'single': 448, 'cnot': 888}
+464754.0
+{'ancilla': 440.0, 'depth': 28.0, 'toffoli': 2152.0, 'single': 464, 'cnot': 920}
+496260.0
+{'ancilla': 456.0, 'depth': 28.0, 'toffoli': 2232.0, 'single': 480, 'cnot': 952}
+528891.0
+{'ancilla': 464.0, 'depth': 29.0, 'toffoli': 2288.0, 'single': 496, 'cnot': 984}
+562464.0
+{'ancilla': 480.0, 'depth': 30.0, 'toffoli': 2344.0, 'single': 512, 'cnot': 1016}
+597069.0
+{'ancilla': 496.0, 'depth': 30.0, 'toffoli': 2424.0, 'single': 528, 'cnot': 1048}
+632808.0
+{'ancilla': 512.0, 'depth': 30.0, 'toffoli': 2504.0, 'single': 544, 'cnot': 1080}
+669480.0
+{'ancilla': 528.0, 'depth': 30.0, 'toffoli': 2584.0, 'single': 560, 'cnot': 1112}
+707184.0
+{'ancilla': 544.0, 'depth': 30.0, 'toffoli': 2664.0, 'single': 576, 'cnot': 1144}
+746031.0
+{'ancilla': 560.0, 'depth': 30.0, 'toffoli': 2744.0, 'single': 592, 'cnot': 1176}
+785802.0
+{'ancilla': 576.0, 'depth': 30.0, 'toffoli': 2824.0, 'single': 608, 'cnot': 1208}
+826605.0
+{'ancilla': 592.0, 'depth': 30.0, 'toffoli': 2904.0, 'single': 624, 'cnot': 1240}
+868560.0
+{'ancilla': 608.0, 'depth': 30.0, 'toffoli': 2984.0, 'single': 640, 'cnot': 1272}
+911430.0
