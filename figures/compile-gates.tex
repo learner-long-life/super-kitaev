@@ -77,11 +77,26 @@ L' = 15 \\
 	\gategroup{1}{2}{5}{9}{.7em}{--}
 }\\
 \xymatrix {
-  & d'=5 \ar[l] \ar[r] & \\
+  & & d'=5 \ar[ll] \ar[rr] & & \\
  }
 \end{array}
 }_{C}
 
+\end{array}
+\end{displaymath}
+
+\begin{displaymath}
+\begin{array}{ccc}
+\Qcircuit @C=1em @R=.7em { 
+	& \multigate{2}{U_1} & \qw \\ 
+	& \ghost{U_1}        & \qw \\
+	& \ghost{U_1}        & \qw 
+} & \ldots &
+\Qcircuit @C=1em @R=.7em { 
+	& \multigate{2}{U_L} & \qw \\ 
+	& \ghost{U_L}        & \qw \\
+	& \ghost{U_L}        & \qw 
+}
 \end{array}
 \end{displaymath}
 
