@@ -35,7 +35,7 @@ axes = pylab.axes([0.125,0.2,0.95-0.125,0.95-0.2])
 # Plot individual series for each input circuit size in Super-Kitaev
 
 shapes = ['-', '.', '*', 'o', '+', ':']
-L_range = range(1,4)
+L_range = range(0,4)
 
 for L_power in L_range:
 	L = 10**L_power
