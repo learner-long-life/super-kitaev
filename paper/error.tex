@@ -47,7 +47,7 @@ on a control register of one qubit and a target register of one qubit.
 
 We have two ways of describing how CNOT is measuring in this case.
 We can say CNOT is \emph{measuring with respect to the decomposition} of
-the control and target registers, namely the computational basis, in that the
+the control registers, namely the computational basis, in that the
 operation on the target register (flipping the bit) depend on decomposing the
 control register in the basis $\{0,1\}$. We can also say that CNOT is
 \emph{measuring a function} $f:\{0,1\} \rightarrow \{0,1\}$ which in this
@@ -68,6 +68,32 @@ From the point of view of measurement, we call the control register the
 \emph{object}, as in the state we are trying to measure, and the target register
 is the \emph{instrument}, as in the state that we transform according to
 projecting the measurement object in some orthogonal decomposition.
-In this case, we say that the CNOT is measuring with respect to 
+
+Let's begin with a simple but more general case of a measuring operator
+$W$ which operates on a space decomposed into the subsystems $\mathcal{N}$
+(the measurement object) and $\mathcal{K}$ (the measurement instrument)
+according to the orthogonal decomposition
+$\mathcal{N} = \Bigoplus_j \mathcal{L}_j$, so-called because
+each of the $\mathcal{L}_j$ are pairwise orthogonal subspaces.
+$W$ will perform a different unitary
+operator $U_j$ on the subsystem $\mathcal{K}$
+depending on the projection of $\mathcal{N}$ into each $\mathcal{L}_j$.
+
+\begin{equation}
+W = \sum_{j \in \Omega} \Pi_{\mathcal{L}_j} \otimes R_j
+\end{equation}
+
+An interesting fact about this definition of measurement operators is
+that approximativeness is preserved. If each unitary $U_j$ is replaced with
+another unitary $\tilde{U}_j$ that approximates it with precision $\delta$,
+then the new measuring operator $\tilde{W}$ also approximates the original
+$W$ with the precision $\delta$.
+
+This precision is defined in terms of the inner product between any state operated
+on by $W$ and by $\tilde{W}$:
+
+\begin{equation}
+
+\end{equation}
 
 \end{document}
