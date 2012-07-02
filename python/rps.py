@@ -6,6 +6,7 @@ from div import *
 from add import *
 
 # For \delta'' = 1/4
+# Taken from updated calculations in MSR midpoint report
 s = 517
 
 # Enact the operator \Upsilon(exp^{2\pi i / 2^n)
