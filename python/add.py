@@ -20,7 +20,10 @@ def encoded_add(m, n):
 	first_level = math.floor(m / 3)
 	#print "first_level= " + str(first_level)
 
-	resources['depth'] = math.ceil(depth) * 6
+	## This counts depth as two-qubit gates
+	# using Nielsen & Chuang decomposition
+	# This counts every single-qubit and two-qubit gate as a depth
+	resources['depth'] = math.ceil(depth) * 13
 	ancilla = 3*n*first_level
 	resources['ancilla'] = math.ceil(ancilla)
 	toffoli = (12*(n-1) + 6)*additions
