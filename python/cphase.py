@@ -7,10 +7,13 @@ from utils import *
 # Enact phases with precision 2^{-n} for L_prime controlled phase gates
 def cphase(n, L_prime):
 
+	# Start with a clean slate
 	resources = create_empty_resources()
 	
+	# Create the initial \ket{\psi_{n,1}}
 	rps_res = rps(n=n)
 	
+	# Copy to create m \ket{\psi_{n,1}} via addition
 	add_res = add(m = L_prime, n = n)
 	
 	resources = combine_resources(rps_res, add_res)
