@@ -1,3 +1,7 @@
+# This outputs one number per line to stdout, which can be piped to a file
+# for import into Excel for charting.
+# Comment/uncomment the lines below to choose which resources to output.
+
 from cphase import *
 
 L_prime = 10000
