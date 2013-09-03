@@ -1,0 +1,78 @@
+\subsection{Precompiling to the Standard Set}
+\label{subsec:precompile}
+
+This is the completely classical preprocessing step for Super-Kitaev which
+assumes we can express any $n$-qubit gate as a tensor product of
+single- and two-qubit gates.
+From there, how do we get down to our universal set?
+
+%\begin{theorem}[Lemma 8.2]
+%\label{lemma82}
+%Any arbitrary unitary operator $U$ of dimension $d \times d$ can be represented
+%as a product of $d(d-2)/2$ matrices of the form:
+%
+%\begin{equation*}
+%\left( \begin{array}{cccccccc}
+%     1 & 0      & \cdots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%     0 & 1      & \cdots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \ddots & \cdots & \cdots & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots &      a &      b & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots &      c &      d & \cdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \vdots & \cdots & \cdots\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \cdots & 1 & 0\\
+%\vdots & \cdots & \cdots & \cdots & \cdots & \cdots & 0 & 1\\
+%\end{array}
+%\right)
+%\end{equation*}
+%
+%where $\left( \begin{array}{cc}
+%a & b\\
+%c & d\\
+%\end{array} \right) \in SU(2)$
+%\end{theorem}
+%
+%\begin{proof}
+%The running time of this algorithm is $O(M^3) \cdot \mathrm{poly}(\log(1/\delta)$.
+%\end{proof}
+
+We use the Euler angle decomposition into $X$ and $Z$ rotations,
+we can express any
+unitary $U$ as follows, with real angles $\phi$, $\gamma$, $\beta$, $\alpha$:
+
+\begin{equation*}
+U = e^{i\phi}e^{i(\gamma/2)\sigma^z}e^{i(\beta/2)\sigma^x}e^{i(\alpha/2)\sigma^z}
+\end{equation*}
+This involves solving four equations in four variables and can be done in
+constant time.
+
+Now how do we implement each of the elements of the Euler angle decomposition from
+the $\mathcal{Q}$? Using these identities:
+
+\begin{equation*}
+e^{i\phi} = \Lambda(e^{i\phi})\sigma^x\Lambda(e^{i\phi})\sigma^x
+\end{equation*}
+\begin{equation*}
+\sigma^x = H\Lambda(e^{i\pi})H
+\end{equation*}
+\begin{equation*}
+e^{i\phi\sigma^z} = \Lambda(e^{-i\phi}\sigma^x\Lambda(e^{i\phi})\sigma^x
+\end{equation*}
+\begin{equation*}
+e^{i\phi\sigma^x} = H e^{i\phi\sigma^z} H
+\end{equation*}
+
+In addition,
+any controlled operator $\Lambda(U)$ where $U \in SU(2)$ can be simulated
+using
+$\mathcal{Q} \cup \{ \Lambda(e^{i\phi})$.
+
+We can represent the controlled operator as $\Lambda(U) = \Lambda(e^{i\phi})\Lambda(V)$.
+$\Lambda(e^{i\phi})$ is already in our set, so it remains to implement
+$\Lambda(V)$, where $V \in SU(2)$. Geometrically, we can decompose any
+three-dimensional rotation into two $180^{\circ}$ rotations about appropriate
+axes. Using the homomorphism between $SO(3)$ and $SU(2)$ and the fact that
+$\sigma^x$ corresponds to a $180^{\circ}$ rotation about the $x$-axis.
+
+\begin{equation*}
+V = A\sigma^x A^{-1} B\sigma^x B^{-1}
+\end{equation*}

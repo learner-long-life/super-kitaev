@@ -1,0 +1,75 @@
+% a sample file for Journal of Quantum Information and Computation (QIC) in 
+% LaTex2e by inputing macro file "qic.sty" with command \usepackage{qic}, 
+% all the macros have been defined in the style file, so it is no need to 
+% put many macros at the beginning of the text file  
+
+\documentclass[twoside]{article}
+%\usepackage[dvips]{graphicx}
+%\usepackage{times}
+%\usepackage{fullpage}
+%\usepackage{rotating}
+%\usepackage{eepic}
+%\usepackage{amsfonts}
+%\usepackage{algorithmic}
+%\usepackage{amsthm}
+
+%\theoremstyle{plain}
+%\newtheorem{theorem}{Theorem}
+
+\newcommand{\targfix}{\qw {\xy {<0em,0em> \ar @{ - } +<.39em,0em>
+\ar @{ - } -<.39em,0em> \ar @{ - } +<0em,.39em> \ar @{ - }
+-<0em,.39em>},<0em,0em>*{\rule{.01em}{.01em}}*+<.8em>\frm{o}
+\endxy}}
+
+\input{Qcircuit}
+
+\newcommand{\braket}[2]{\langle #1|#2 \rangle}
+\newcommand{\normtwo}{\frac{1}{\sqrt{2}}}
+\newcommand{\norm}[1]{\parallel #1 \parallel}
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Universal gate set
+
+\begin{displaymath}
+\left\{
+\begin{array}{c}
+% Comment out the following if you want to spell out the matrices
+%\Qcircuit @C=1em @R=.7em { 
+%	& \gate{\normtwo\begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}} & \qw }
+%,
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{H} & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{T} & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{K} & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{K^\dagger} & \qw }
+\;\; , 
+\\
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{X} & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=.7em { 
+	& \gate{Z} & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=1em { 
+	 & \ctrl{1} & \qw \\
+	 & \targfix & \qw }
+\;\; , \;\;
+\Qcircuit @C=0.6em @R=1em { 
+	 & \ctrl{1} & \qw \\
+	 & \ctrl{1} & \qw \\
+	 & \targfix & \qw }
+\end{array}
+\right\}
+\end{displaymath}
+
+\end{document}

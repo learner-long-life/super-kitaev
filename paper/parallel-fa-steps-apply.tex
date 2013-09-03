@@ -1,0 +1,75 @@
+\subsection{Applying Function Tables}
+\label{subsec:apply}
+
+Finally, we have narrowed tables composed so that we can skip ahead to
+intermediate states in a logarithmic-depth, binary tree fashion.
+
+The scheme for determining all the intermediate states $s_i$ follows
+the diagram below. Recall that we start out knowing the initial state
+$s_0$.
+
+\begin{displaymath}
+\xymatrix @C=1em {
+\text{level 1} & s_0 \ar[rrrr]^{F_{2,0}} \ar[ddd] &     &        &     & s_4 \ar[ddd]\\
+\text{level 2} &     \ar[rr]^{F_{1,0}}   &     & s_2 \ar[dd]    &     & \\
+\text{level 3} &     \ar[r]^{F_{0,1}} & s_1 \ar[d] & \ar[r]^{F_{0,3}} & s_3 \ar[d] & \\
+              &               &     &        &     &
+}
+\end{displaymath}
+
+In general, each composed function has multiple-bit output, and to
+apply it we actually need to apply $k_s$ separate single-bit output
+functions. Applying each single-bit output function takes $2^{k_s}$
+generalized Toffoli's,
+each with $k_s+1$ controls (one for every bit of the input, plus one for
+the function table to apply) and in total requiring $2^{k_s}$ negative
+controls. Recall that such a generalized Toffoli can be implemented
+with $k_s - 1$ normal Toffoli's and $k_s - 2$ ancillae.
+Finally, to hold the final value of the $s_i$'s, we need $k_s$ ancillae.
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+F_{k,i}^j & & s_i = 00 & & \qw & \ctrl{4} & \qw      & \qw      & \qw      & \qw\\
+        & & s_i = 01 & & \qw & \qw       & \ctrl{3}  & \qw       & \qw      & \qw\\
+        & & s_i = 10 & & \qw & \qw       & \qw       & \ctrl{2}  & \qw      & \qw\\
+        & & s_i = 11 & & \qw & \qw       & \qw       & \qw       & \ctrl{1} & \qw\\
+s_i^0   & &          & & \qw & \ctrlo{1} & \ctrlo{1} & \ctrl{1}  & \ctrl{1} & \qw \\
+s_i^1   & &          & & \qw & \ctrlo{1} & \ctrl{1}  & \ctrlo{1} & \ctrl{1} & \qw \\
+s_{i+1}^j & &        & & \qw & \targ     & \targ     & \targ     & \targ    & \qw \\
+}
+\end{displaymath}
+
+Unlike in the previous step with compositions, we need to apply the
+lowest level of our function tables, the $F_{0,i}$ functions. Therefore,
+in analogy to Equation \ref{eqn:compose},
+the total number of function applications is given below. The
+circuit depth depends on $l$ levels of applications, and not $l+1$
+because the two highest levels (to compute $s_n$ and $s_{n/2}$) can be
+done in parallel.
+
+\begin{equation}
+\left( \sum_{j=0}^{l} 2^j \right) - \left( \sum_{j=1}^{l} 2^j \right)
+= (2^{l+1} - 1) - (2^{l} - 1) = 2^l = n
+\end{equation}
+
+Also unlike with compositions, we bring back our optional output function
+$g$, which we have already narrowed and is ready to be applied at each
+of $n$
+iteration with the states $s_i$ which we have just computed in this step.
+Applying $g$ is the same as applying $f$ (and $F_{k,i}$) above.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r|cc|}
+\hline
+NOT Gates per Application & $\ell_N = $ & $2^{k_s} \cdot 2$ \\
+Toffoli Gates per Application & $\ell_T = $ & $k_s \cdot (2^{k_s}\cdot (k_s-1)) \cdot 2$\\
+Total NOT Gates & & $n \cdot (1 + \delta_g) \cdot \ell_N$ \\
+Total Toffoli Gates & & $n \cdot (1 + \delta_g) \cdot \ell_T$ \\
+Ancillae & & $(2^l)\cdot k_s \cdot (k_s + (k_s - 2)) \cdot 2$\\
+Circuit Depth & & $l\cdot(\ell_T d_T + \ell_N d)$\\
+\hline
+\end{tabular}
+\caption{Resource counts for Step 4: applying compose function tables in parallel.}
+\end{center}
+\end{table}

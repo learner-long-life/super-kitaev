@@ -1,0 +1,41 @@
+\section{Review of Solovay-Kitaev}
+\label{sec:sk-algo}
+
+The essential structure of Solovay-Kitaev is recursive, successive
+approximation. Our pseudo-code and explanation
+follows the excellent exposition in \cite{Dawson2005} and \cite{harrow01}
+
+\begin{algorithmic}[1]
+\STATE \textsc{function} $\tilde{U}_n \leftarrow$ SOLOVAY-KITAEV$(U,n)$
+\IF{$n == 0$}
+\STATE $\tilde{U}_n \leftarrow $ BASIC-APPROX$(U)$
+\ELSE
+\STATE $\tilde{U}_{n-1} \leftarrow$ SOLOVAY-KITAEV$(U, n-1)$
+\STATE $A,B \leftarrow $ FACTOR$(U\tilde{U}^\dagger_{n-1})$
+\STATE $\tilde{A}_{n-1} \leftarrow $ SOLOVAY-KITAEV$(A, n-1)$
+\STATE $\tilde{B}_{n-1} \leftarrow $ SOLOVAY-KITAEV$(B, n-1)$
+\STATE $\tilde{U}_n \leftarrow \tilde{A}_{n-1}\tilde{B}_{n-1}\tilde{A}^\dagger_{n-1}\tilde{B}^\dagger_{n-1}\tilde{U}_{n-1}$
+\ENDIF
+return $\tilde{U}_n$
+\end{algorithmic}
+
+The BASIC-APPROX function above does a lookup (via some kd-tree search
+maneuvers through higher-dimensional vector spaces) using the results of
+precompiled sequences from $\mathcal{G}$.
+This can be
+done offline and reused across multiple runs of the compiler, assuming
+$\mathcal{G}$ for your quantum computer doesn't change.
+
+The FACTOR function performs a balanced group commutator decomposition,
+$U = ABA^\dagger B^\dagger$, and then recursively approximates the $A$ and $B$
+operators using Solovay-Kitaev. Intuitively, when they are multiplied
+together again, along with their inverses, their errors (which go like
+$\epsilon$) are symmetric and cancel out in such a way that the resulting
+product $U$ has errors which go like $\epsilon^2$. In this manner, we can
+eventually sharpen our desired error down to any value.
+
+Each level $n$ of recursion solves the problem of compiling 
+$U_n$ by combining five gates compiled at the lower $n-1$ level.
+Therefore, the compiled circuit size is upper-bounded by $5^n$, and
+this is in general the same as the circuit depth (since not all gates in the
+$\mathcal{G}$ commute).

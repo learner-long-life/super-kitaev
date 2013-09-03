@@ -1,0 +1,148 @@
+\subsection{Composing Narrowed Function Tables}
+\label{subsec:compose}
+
+Now that we have narrowed the function tables by input, they only depend
+on the current state. By composing adjacent function tables in a binary
+tree hierarchy, we can compute all the intermediate states of an FA
+execution while still preserving logarithmic depth.
+
+We will use the notation $F_{k,i}$ to denote the $i$th composed function table
+at the $k$th level of recursion, according to the diagram below for $n=4$.
+$F_{0,i}$, at the base level, corresponds to the original function $f$
+narrowed by input $a_i$.
+
+\begin{displaymath}
+\xymatrix @C=1em {
+  \ar[rr]^{s_0} & &
+   *+[F]{F_{0,0}} \ar[rr]^{s_1} & &
+   *+[F.]{F_{0,1}} \ar[rr]^{s_2} & &
+   *+[F]{F_{0,2}} \ar[rr]^{s_3} & &
+   *+[F.]{F_{0,3}} \ar[rr]^{s_4} & & \\
+  & & & *+[F]{F_{1,0}} \ar@{<-}[ul] \ar@{<-}[ur]
+  & & & & *+[F.]{F_{1,1}} \ar@{<-}[ul] \ar@{<-}[ur] \\
+  & & & & & *+[F]{F_{2,0}} \ar@{<-}[ull] \ar@{<-}[urr]
+}
+\end{displaymath}
+
+How many composition operations do we need to do for our $n$ initial
+narrowed $F_{0,i}$ tables? The resulting full binary tree (except for
+the first level) has $\lceil \log_2 n \rceil = l$ levels and therefore
+$2^{l}-1$ nodes. However, as will become apparent in the next section, we don't
+need the compositions with a dotted border above.
+
+Since at each level of compositions, we can remove half of the nodes
+(except for the root node), we have the following formula of the
+total number of compositions we need for $n$ iterations and $l$ levels,
+where the root level corresponds to $j=0$.
+
+\begin{equation}
+\sum_{j=0}^{l-1} 2^j - \sum_{j=1}^{l-1} 2^{j} =
+(2^l - 1) - (2^{l-1} - 1) = 2^l - 2^{l-1} = 2^{l-1}
+\end{equation}
+\label{eqn:compose}
+
+\subsubsection{Composing Functions with Single-Bit Output}
+
+First we will show how to compose a function table with a single-bit output,
+since this is the simplest case. However, $f$ and $g$ may be multi-bit output
+functions ($k_s, k_o > 1$). To solve this, we just decompose $f$ and $g$
+into a bunch of single-bit functions, and then show how to combine these
+functions so that we end up composing the original, multi-bit functions.
+
+For the single-bit case, let's concentrate on $f$ which has $k_s = 1$
+and $2^{k_s} = 2$ lines.
+(the treatment of $g$ is equivalent with $k_o = 1$ and also $2^{k_o} = 2$ lines).
+
+This is the circuit for composing two such functions, $F_{k,i}$ and $F_{k,i+1}$,
+into a new function $F_{k+1,\lfloor 1 \rfloor}$
+which is equivalent to first applying
+$F_{k,i}$ to get an output and feeding that into $F_{k,i+1}$. In circuit below,
+the ``input'' is actually the preceding state $s_i$.
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+F_{k,i}^j  & & s_i = 0 & & \qw & \ctrl{3} & \qw      & \ctrlo{2} & \qw       & \qw \\
+           & & s_i = 1 & & \qw & \qw      & \ctrl{2} & \qw       & \ctrlo{1} & \qw \\
+F_{k,i+1}^j & & s_i = 0 & & \qw & \qw      & \qw      & \ctrl{2}  & \ctrl{3}  & \qw \\
+           & & s_i = 1 & & \qw & \ctrl{1} & \ctrl{2} & \qw       & \qw       & \qw \\
+F_{k+1,i/2} & & s_i = 0 & & \qw & \targ    & \qw      & \targ     & \qw       & \qw \\
+ & & s_i = 1 & & \qw & \qw      & \targ    & \qw       & \targ     & \qw \\
+}
+\end{displaymath}
+
+\subsubsection{Composing Functions with Multiple-Bit Output}
+
+Now assuming that $k_s > 1$ and we have decomposed such a function table into
+$k_s$ single-bit output functions, how do we combine them together again?
+We consider the case for $k_s = 2$, shown below, and it is easy to generalize
+this for higher $k_s$.
+Each $s_i$ is a 2-bit state
+where $s_{i,0}$ is the first bit and $s_{i,1}$ is the second bit.
+Each $F_i^j$ is a single-bit output function that supplies bit $j$
+from iteration $i$ to feed into the next iteration $i+1$.
+
+\xymatrix{
+          & *+[F]{F_{i,0}} \ar[r] & s_{i+1,0} \ar[r] \ar[ddr] & *+[F]{F_{i+1,0}} \ar[r] & s_{i+2,0} \\
+s_i \ar[ur] \ar[dr] &              &                     &           \\
+          & *+[F]{F_{i,1}} \ar[r] & s_{i+1,1} \ar[r] \ar[uur] & *+[F]{F_{i+1,1}} \ar[r] & s_{i+2,1} \\
+}
+
+The circuit for composing three of these functions is given below, for
+the input state $s_i$ equal to $00$ and $01$. Similar gates can be found
+for the remaining state values of $10$ and $11$.
+$F_i^0$ and $F_i^1$ supply two bits which become the input for
+$F_{i+1}^0$. When composed into the new function $F_{i+1}^0$,
+we have a table which produces the first bit of the state $s_{i+2}$
+give all the bits of state $s_{i}$.
+
+\begin{displaymath}
+\Qcircuit @C=2em @R=1.5em {
+F_{k,i}^0     & & s_i = 00 & & \qw & \ctrl{4} & \ctrlo{4}   & \ctrl{4} & \ctrlo{4}  & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 01 & & \qw & \qw      & \qw         & \qw       & \qw       & \ctrl{4} & \ctrlo{4}   & \ctrl{4} & \ctrlo{4}  & \qw \\
+              & & s_i = 10 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 11 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+F_{k,i}^1     & & s_i = 00 & & \qw & \ctrl{7} & \ctrl{5}    & \ctrlo{6} & \ctrlo{4} & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 01 & & \qw & \qw      & \qw         & \qw       & \qw       & \ctrl{6} & \ctrl{4}    & \ctrlo{5} & \ctrlo{3} & \qw \\
+              & & s_i = 10 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 11 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+F_{k,i+1}^0   & & s_i = 00 & & \qw & \qw      & \qw         & \qw       & \ctrl{4}  & \qw      & \qw         & \qw       & \ctrl{5}  & \qw \\
+              & & s_i = 01 & & \qw & \qw      & \ctrl{3}    & \qw       & \qw       & \qw      & \ctrl{4}    & \qw       & \qw       & \qw \\
+              & & s_i = 10 & & \qw & \qw      & \qw         & \ctrl{2}  & \qw       & \qw      & \qw         & \ctrl{3}  & \qw       & \qw \\
+              & & s_i = 11 & & \qw & \ctrl{1} & \qw         & \qw       & \qw       & \ctrl{2} & \qw         & \qw       & \qw       & \qw \\
+F_{k+1,i/2}^0 & & s_i = 00 & & \qw & \targ    & \targ       & \targ     & \targ     & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 01 & & \qw & \qw      & \qw         & \qw       & \qw       & \targ    & \targ       & \targ     & \targ     & \qw \\
+              & & s_i = 10 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+              & & s_i = 11 & & \qw & \qw      & \qw         & \qw       & \qw       & \qw      & \qw         & \qw       & \qw       & \qw \\
+}
+\end{displaymath}
+
+To compute each bit of the next state
+$s_{i+1}$, a multiple-bit composition consists of 
+$k_s$ single-bit compositions. Each single-bit composition is
+composed of $2^{k_s}$ generalized Toffoli's with $k_s +1$ controls, and
+$2^{k_s}$ NOT gates for negative controls. Remember that a generalized
+Toffoli with $k_s + 1$ controls requires $k_s$ Toffoli's and $k_s - 1$
+ancillae. Each single-bit composition requires $2^{k_s}$ ancillae to
+hold the new function table. The single-bit compositions cannot be done
+in parallel, however, because they all use the same control bits.
+
+From the beginning of this section, we have that there are $2^l - 1$
+multiple-bit compositions, in general, which multiplies everything above,
+except the circuit depth. The circuit depth multiplier is
+just the height of the tree of compositions is $l$.
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|r|cc|}
+\hline
+NOT Gates per Multiple-Bit Composition & $\ell_N = $ & $k_s \cdot 2^{k_s} \cdot 2$ \\
+Toffoli Gates per Multiple-Bit Composition & $\ell_T = $ & $k_s \cdot (2^{k_s}\cdot (k_s-1)) \cdot 2$\\
+Total NOT Gates & & $(2^{l-1}) \cdot \ell_N$ \\
+Total Toffoli Gates & & $(2^{l-1}) \cdot \ell_T$ \\
+Ancillae & & $(2^l - 1)\cdot k_s \cdot (2^{k_s} + (k_s - 1)) \cdot 2$\\
+Circuit Depth & & $l\cdot(\ell_T d_T + \ell_N d)$\\
+\hline
+\end{tabular}
+\caption{Resource counts for Step 3: composing narrowed function tables in parallel.}
+\end{center}
+\end{table}

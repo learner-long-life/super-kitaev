@@ -1,0 +1,25 @@
+\subsection{Copying Input Bits}
+\label{subsec:copy}
+
+This is the simplest step and results in $n$ copies of the input bits. Since
+these are the control bits for many subsequent operations, if we wish to
+source them in parallel, we must have multiple copies. This simply
+involves a CNOT to copy each input into an empty ancilla.
+
+We copy in a parallel fashion to achieve logarithmic depth, and each new
+copy can itself produce another copy simultaneously. Therefore the circuit depth
+is just the height of
+a binary tree with $n$ nodes, times two for uncopying later.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r|cc|}
+\hline
+CNOT Gates Per Input &  $\ell_C = $ & $k_i \cdot 2$ \\
+Ancillae & & $n\cdot k_i$\\
+Circuit Depth & & $(\lceil \log_2 n \rceil - 1 )\cdot \ell_C \cdot d_C$\\
+\hline
+\end{tabular}
+\caption{Resource counts for Step 1: copying input bits in parallel.}
+\end{center}
+\end{table}

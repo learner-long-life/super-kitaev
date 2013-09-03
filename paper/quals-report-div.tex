@@ -1,0 +1,58 @@
+\subsection{Quantum Divider}
+\label{subsec:div}
+
+The most resource-intensive step of the registered phase shift operation
+is solving $p = p(s,l)$ in Equation
+\ref{eqn:psl} for a given resulting
+eigenvector $\ket{\psi_{2s-1}}$ after phase estimation and a desired
+phase shift $exp(2\pi i l / 2^n)$.
+This involves finding a modular inverse, which
+we can convert to a product of sums (addition and multiplication,
+which we already know how to do efficiently).
+
+To find $y = (2s-1)^{-1} \mod 2^n$, it should have the property
+$y \cdot (2s-1) \equiv 1 \mod 2^n$ or equivalently
+$-y \cdot (2s-1) \equiv -1 \mod 2^n$. As a guess, we will choose the
+$-y$ version and have it be a fraction with $(2s-1)$ in the denominator and
+something in the numerator which is $1$ less than a multiple of
+$2^n$, such as $2^n s^n - 1$.
+We choose this to resemble the closed form of a geometric series,
+as shown below.
+
+\begin{displaymath}
+-y = \frac{2^n s^n - 1}{2s - 1} = \frac{(2s)^n - 1}{(2s) - 1} =
+\frac{1 - (2s)^n}{1 - (2s)} = \sum_{i=0}^n (2s)^i
+\end{displaymath}
+
+We use the following observation to convert this geometric series into a
+product of sums involving power-of-two exponents, which makes for 
+easy multiplication via bitshifting.
+
+\begin{displaymath}
+\sum_{k=0}^{2^l - 1} z^k = (1 + z)(1 + z^2)(1 + z^4)\cdots(1 + z^{2^{l-1}})
+\end{displaymath}
+
+In general a geometric series with $m = 2^l$ terms
+involves $m$ sums
+and $m$ products. Using the above formula, we have $\log m$ products and
+$\log m$ sums. Both are necessary to achieve our desired logarithmic
+depth for the overall registered phase shifting procedure.
+
+Substituting, we get:
+
+\begin{displaymath}
+-y = \prod_{r=0}^{\lceil \log_n \rceil - 1} (1 + (2s)^{2^r})
+\end{displaymath}
+
+Then the final solution of $p$ in the first equation above is:
+
+\begin{displaymath}
+p = -yl \mod 2^n = -l \prod_{r=1}^{\lceil \log n \rceil -1} (1 + (2s)^{2^r})
+\end{displaymath}
+
+The resource counts for this modular division is equivalent to:
+
+\begin{multline}
+\text{DIV-MOD}(n) = \lceil \log n \rceil \cdot \text{MULT-2}(n) + \\
+ (\lceil \log n \rceil - 1) \cdot \text{ADD}(2, n)
+\end{multline}

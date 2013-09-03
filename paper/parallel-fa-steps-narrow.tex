@@ -1,0 +1,53 @@
+\subsection{Narrowing Function Tables by Inputs}
+\label{subsec:narrow}
+
+Now that we have copied enough inputs to source, we can use them
+to narrow our function tables (both $f$ and $g$) by successively
+halving the function tables based on the value of each
+input bit. This is where we rely on our classical control to encode
+the function tables in the Toffoli's applied in the narrowings. The function
+table itself appears nowhere else in our circuits.
+
+Therefore, each of the $k_i$ input bits takes two Toffoli's,
+one of which has a NOT gate to negate its control bit. This
+successive halving takes the following number of ancillae, since we start
+with a function table of $2^{k_i + k_s}$ and want to end with a function
+table of $2^{k_s}$:
+
+\begin{displaymath}
+2^{k_i + k_s - 1} + 2^{k_i + k_s - 2} + \ldots + 2^{k_s + 1} + 2^{k_s}
+\end{displaymath}
+
+which we can express as the difference of sums:
+
+\begin{displaymath}
+\sum_{j=0}^{k_i + k_s - 1} 2^j - \sum_{j=0}^{k_s} 2^j = 
+\left( 2^{k_i+k_s} - 1 \right) - \left( 2^{k_s+1} - 1 \right)
+\end{displaymath}
+
+Likewise if we use the output function $g$, we can treat each of its
+$k_o$, output bits as a separate one-bit output function, and then we
+require the same number of gates and ancillae as above for each one.
+
+There is one such narrowed table copy of $f$ (and $g$) for each of $n$ inputs.
+For each copy of the table, for each of $k_i$ successive narrowings and
+input bits, there are several gates that need to be applied serially because
+they use the same control bits---this makes up the circuit depth.
+These serial gates are one Toffoli for each of $w(\cdot)$ one outputs,
+$z(\cdot)$ of which require single-qubit NOT gates to negate their control.
+There is also a factor
+of 2 for uncomputing all of these ancillae back to $\ket{0}$.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r|cc|}
+\hline
+NOT Gates per Input & $\ell_N = $ & $[z(f)+z(g)] \cdot (2^{k_i+k_s} - 2^{k_s+1}) \cdot 2$ \\
+Toffoli Gates per Input & $\ell_T = $ & $[w(f)+w(g)] \cdot (2^{k_i+k_s} - 2^{k_s+1}) \cdot 2$\\
+Ancillae & & $n\cdot (2^{k_i+k_s} - 2^{k_s+1}) \cdot (1 + \delta_g2\cdot k_o) \cdot 2$\\
+Circuit Depth & & $\ell_T d_T + \ell_N d$\\
+\hline
+\end{tabular}
+\caption{Resource counts for Step 2: narrowing function tables by inputs in parallel}
+\end{center}
+\end{table}

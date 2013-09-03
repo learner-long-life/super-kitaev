@@ -1,0 +1,29 @@
+\subsection{Quantum Multiplication}
+\label{subsec:mult}
+
+Now that we know how to add quantum numbers efficiently, we can use this
+to implement a similarly low-depth multiplication circuit.
+
+Consider the inputs to our quantum multiplier as two $n$-bit numbers,
+$a$ and $b$.
+Our grade school multiplication algorithm simply sums up $n$ copies of $a$,
+where $c(i)$ denotes $a$ shifted up by $i$ bits and multiplied by bit $b_i$.
+
+\begin{figure}
+\caption{Piecewise definition of $c(i)$ shifted multiples for multiplication}
+\end{figure}
+
+There are $n$ such shifted multiples $c(i)$. By summing them up and retaining
+only the low-order $n$-bits, we are reducing multiplication of two $n$-bit
+numbers, modulo $2^n$, to the addition of $n$ $n$-bit numbers, which we
+already know how to do in parallel. In fact, we can do it in
+$\log(n) + \log(n) = O(\log n)$ depth.
+To hold the shifted multiples, we will
+need $n(n+1)/2$ ancillae, since each bit shift leaves a low-order zero bit
+that we don't need to include in our sum.
+
+We define the resource counts of in-place multiplication as follows.
+
+\begin{displaymath}
+MULT-2(n) = ADD(n, n) + n(n+1)/2 \text{ancillae}
+\end{displaymath}

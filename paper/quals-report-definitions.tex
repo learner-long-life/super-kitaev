@@ -1,0 +1,121 @@
+\section{Preliminaries}
+\label{sec:prelims}
+
+\subsection{Some Special Operator Notation}
+
+Borrowing the notation in \cite{ksv02},
+we can define two "meta-operators" which takes some unitary $U$ as
+a parameter. The first describes a controlled-$U$ operation where the control
+is some single qubit.
+
+\begin{displaymath}
+\Lambda(U) = \ket{0}\bra{0} \otimes I + \ket{1}\bra{1} \otimes U
+\end{displaymath}
+
+The second describes a registered-$U$ operation, which
+can be thought of as controlled on some multi-qubit register $\ket{p}$
+encoding an $m$-qubit number $p$ to apply $U$ a certain number of times to a
+target
+register.
+
+\begin{displaymath}
+\Upsilon_m(U) : \ket{p} \otimes \ket{\psi} \rightarrow \ket{p}
+\otimes U^p\ket{\psi}
+\end{displaymath}
+
+\subsection{A Universal Set of Gates}
+
+We use the following universal standard set of gates $\mathcal{G}$.
+The single-qubit rotations about the $x-$ and $z-$ axes
+(of which $X$ and $Z$
+are special cases) are known to be efficient on ion trap
+implementations, but the set of realizable angles $\theta$ is finite.
+
+\begin{displaymath}
+\mathcal{G} = \{ H, K, K^{-1}, X, Z,
+\Lambda(\sigma_x), \Lambda^2(\sigma_x) \}
+\end{displaymath}
+
+$\Lambda(\sigma_x)$ and $\Lambda^2(\sigma_x)$ are CNOT and Toffoli,
+respectively.
+Any current or future physical implementations of a quantum
+computer will need to efficiently implement this set or an equivalent one.
+Without proving the universality of $\mathcal{G}$, we note that all known
+quantum algorithms reduce to it.
+
+\subsection{Parameters}
+
+The problem of quantum compiling is to translate
+an entire circuit $C$ of $L$ gates with depth
+$d$ to a new, compiled circuit $C'$ of size $L'$ and depth $d'$ which approximates
+$C$ within some error $\epsilon$ using some distance measure.
+
+In our code, we use the trace measure introduced by Austin Fowler which disregards
+the global phase factor, so that we don't waste time trying to approximate
+the unmeasurable phase of our target gate. Here,
+$l$ refers to the dimensionality
+of our system (for $n = 2^l$ qubits).
+
+\begin{equation}
+d(U,\tilde{U}) = \sqrt{\frac{l - \norm{\mathrm{tr}(U^\dagger \tilde{U})}}{l}}
+\end{equation}
+
+We will be somewhat sloppy and use the terms ``error'', ``precision'', and
+``accuracy'' interchangeably when approximating gates.
+There is some overhead in the compiled circuit, so in
+general $C'$ is larger (that is, $L' > L$ and $d' > d$). It's also known that
+in order to approximate a circuit with $L$ gates to a total precision of
+$\epsilon$
+requires each gate to be approximated to a precision of
+$n = O(\log(L/\epsilon)$. We'll call the classical preprocessing time to
+produce $C'$ as $T$.
+ 
+Circuit depth is a heuristic for how parallelizable our
+circuit is. For example, in an ion trap, if we had multiple lasers,
+we could ``flatten'' our circuit into layers with bounded fan-in and
+fan-out and operate on multiple ions in parallel.
+All other things being equal, a circuit with low depth will complete
+faster than one with high depth, although in practice we can only execute
+fixed-width circuits.
+
+\subsection{Quantum Coprocessor Model}
+
+All experimental implementations of quantum computers treat them as an
+auxiliary device controlled by a classical computer. This is the way
+quantum computers will function for the foreseeable future, and many
+quantum algorithms can actually be split into classical and quantum parts
+to reflect this distinction. For example,
+Solovay-Kitaev is a completely classical algorithm which is run before
+a quantum algorithm to yield a deterministic set of gates. Super-Kitaev
+also contains classical postprocessing as part of its parallelized
+phase-estimation. Since classical computers are well understood and
+pretty fast, we will neglect the performance of these classical parts
+if they are polynomial in time. However, we will discuss one aspect
+of classical overhead later since it appears to be intractable.
+
+\subsection{Asymptotic Bounds}
+
+The Solovay-Kitaev and Super-Kitaev algorithms compile circuits with
+a size and depth which depend on the desired precision via the
+parameter $n$ as shown below. We'll see these asymptotic bounds reflected
+later in the actual numerical results in Section \ref{sec:results}.
+The version of Solovay-Kitaev in Section \ref{sec:sk-algo} has a
+larger exponent for the logarithm but is
+easier to understand.
+
+\begin{center}
+\begin{table}
+\begin{tabular}{|c|c|c|}
+\hline
+   & Solovay-Kitaev & Super-Kitaev\\
+\hline
+$L'$ & $O(Ln^{3+\nu})$ & $O(Ln + n^2 \log n)$\\
+$d'$ & $O(dn^{3+\nu})$ & $O(d \log{n} + (\log{n})^2))$\\ 
+\hline
+\end{tabular}
+\end{table}
+\end{center}
+
+where $\nu$ is a small positive constant.
+The improve Solovay-Kitaev with the improved $3+\nu$ exponent and
+Super-Kitaev are both described in \cite{ksv02}.

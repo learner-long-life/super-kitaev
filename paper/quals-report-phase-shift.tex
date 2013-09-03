@@ -1,0 +1,23 @@
+\subsection{Registered-Phase Shift}
+\label{subsec:phase-shift}
+
+Registered phase shifting is the only use of phase estimation in
+Super-Kitaev but it is the most resource-intensive step.
+We would like to enact the operator $\Upsilon(e^{-2\pi i / 2^n})$ on
+$\ket{\psi_{n,0}}$, which is easy to create, to get $\ket{\psi_{n,1}}$,
+which we can later use to enact $\Lambda(e^{2\pi i l / 2^n})$.
+
+\begin{enumerate}
+\item Create the state $\ket{\eta}$ as described in \ref{subsec:magic-state}.
+\item Measure $k$ by determining the phase $\phi_k = k/2^n$ with precision
+$\delta = 2^{-n}$ by using phase estimation. One of the $n$-qubit registers
+now contains $\ket{\psi_{n,k}}$ for some fixed $k$.
+This is done by parallelized phase estimation described in
+\ref{subsec:ppe}.
+This is done by a circuit of size $O(n^2)$ and depth $O(\log n)$.
+\item Solve for $p$ in equation
+Equation \ref{eqn:psl} using modular division, described in
+\ref{subsec:div}.
+\item Apply $A^p$ to the $n$-qubit register containing $\ket{\psi}$, which
+enacts the desired phase shift.
+\end{enumerate}

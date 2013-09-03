@@ -1,0 +1,61 @@
+\section{Conclusion and Future Directions}
+
+In summary, we have seen the expected asymptotic bounds of both the
+Solovay-Kitaev and Super-Kitaev quantum compiling algorithms reflected in
+numerical resource comparisons. Solovay-Kitaev requires a large classical
+preprocessing overhead but produces a more tractable number of compiled
+gates and zero ancillae, albeit at larger circuit depth. This seems to be
+a more reasonable choice for early experiments in running algorithms on an
+80-qubit ion-trap quantum computer, where physical trapping constraints
+make large numbers of qubits problematic but we are potentially willing to
+wait a long time for the computation to complete. On the other hand, the
+situation may change in the future when
+quantum computers become more mature, scalable, and parallel;
+when we become more ambitious in our
+algorithm input sizes; and when the performance bottleneck becomes circuit depth.
+In that case, Super-Kitaev may be preferrable.
+Quantum computer engineers of the future will be able to use this work to
+choose the most suitable quantum compiling technique currently available
+as well as compare it to future compiling algorithms.
+
+Moreover, the development of a compiler is intertwined with the
+development of the underlying architecture. Just as classical programming
+languages hint at what features would be desirable to move out of software
+(and compile-time)
+and into hardware (and run-time), Super-Kitaev provides some suggestions
+to future quantum architectures. Hardware which seeks to take advantage of
+this low-depth compiling would need to have a
+"phase factory" for enacting the $\Lambda(e^{i\phi})$ gate, which would
+included an efficient parallelized phase estimation routine. These are
+novel resources which are currently not being considered in related literature.
+
+Furthermore, quantum compiling may provide some hints to how we can program
+their analog cousins. Although analog computers have fallen out of
+favor as a primary computing model due to noise problems, they are making a
+resurgence as a complementary ``coprocessor'' to digital computers, much like
+the imagined future role of quantum computers. Like quantum computers,
+analog computing uses existing physical properties to perform useful
+computation, such as solving differential equations using electric current
+and potential. Multiple AC signals and a single DC signal can coexist
+in superposition on a wire,
+and complex impedance from resistors, capacitors, and inductors
+can differentiate between components of different frequencies.
+
+\begin{displaymath}
+V = I(R + \frac{1}{j\omega_1 C} + j\omega_2 L + \ldots)
+\end{displaymath}
+
+While it is unlikely that such a model would be more powerful in general
+from a computational complexity point of view, we may be able to use them
+as a practical aid in solving specific engineering problems, such as
+encoding the periods of cyclic integer groups in corresponding periods of
+sinusoidal signals. Such an analog computing model might be able to be
+programmed via recursive successive approximation like Solovay-Kitaev or
+using the techniques of Super-Kitaev.
+
+\section{Acknowledgements}
+
+The author would like to gratefully acknowledge the help of
+his advisors Dave Bacon and Mark Oskin,
+as well as Aram Harrow for the introduction to
+Super-Kitaev and related expertise.

@@ -1,0 +1,28 @@
+qureg a[1];
+qureg b[1];
+qureg c[1];
+
+Mix(a);
+
+dump a&b&c;
+
+CNot(c, a);
+
+dump a&b&c;
+
+Mix(a);
+
+// Copy a to b
+CNot(b,a);
+
+dump a&b&c;
+
+Mix(a);
+
+dump a&b&c;
+
+CNot(c,a);
+
+dump a&b&c;
+
+Mix(a);

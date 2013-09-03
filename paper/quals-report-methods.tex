@@ -1,0 +1,72 @@
+\section{Methods}
+\label{sec:methods}
+
+The code simulating Solovay-Kitaev and 
+Super-Kitaev were written using Python 2.5 and numpy 1.4.1.
+Resource requirements were measured by running this code on
+a Linux machine with an Intel Pentium 3.2 GHz dual core CPU and 1 GB of RAM.
+
+We calculated resource usage by the two algorithms in approximating a
+two-qubit
+controlled-rotation gate ($\Lambda(R_k) \in SU(4)$) used in the quantum Fourier
+transform that is central to many important quantum algorithms.
+Due to space and time limitations, we were unable to obtain the actual
+compiled universal gate
+sequences needed to implement this beyond modest precision.
+Algorithm-dependent constraints are provided below with an indication of
+why they are beyond the scope of this work.
+Therefore, the estimates provided are upper bounds indicating
+the worst-case resource usage, which are nevertheless more concrete than
+previously known asymptotic bounds. In actual practice, depending on the gate
+to be compiled, the performance may be better.
+
+Errors in individual gates in a circuit sum up according to the following
+formula, where $U_i$ indicates our ideal gate, $\tilde{U_i}$ indicates our
+compiled, approximated gate, and $\epsilon_i  = || U_i - \tilde{U_i} ||$.
+
+\begin{displaymath}
+|| U_1\cdots U_n - \tilde{U_1}\cdots\tilde{U_n} || \le \sum_{i=1}^n \epsilon_i
+\end{displaymath}
+
+Therefore, for a circuit like the QFT on $t$-qubits with size $O(t^2)$ gates,
+we would like our error for individual gates to scale like $O(1/t^3)$.
+For Shor's factoring algorithm on an $L$-bit number, the reduction to
+order-finding applies the inverse QFT on $t = 2L + O(1)$ assuming some constant
+overall error precision. For the commonly used RSA key size of
+$L = 2048 = 2^11$ bits, $t \approx 4096 = 2^12$, and we would like an individual
+$\Lambda(R_k)$ gate in QFT$^{\dag}$ to have error on the order of
+$1/(2^36)$. Accordingly, we compare resources on error precisions from
+$1/2$ to $1/2^40$, expressed as $1 \le \log_2(1/\epsilon) \le 40$. Of course,
+we are neglecting the enormous overhead of error correction, the threshold
+theorem for single qubit error rates \cite{nc00}, and the implementation error
+of our universal gate set $\mathcal{G}$.
+
+In addition to the modifications to the original Super-Kitaev procedure
+described in the previous sections, we make several assumptions to
+simplify our analysis. We treat CNOT and single-qubit gates as taking
+equal time, when in actual implementations (for example, ion traps) the CNOT
+operation is much longer. The Toffoli gate, which can be implemented using
+6 CNOTs and 10 single-qubit gates, is counted as 16 gates.
+
+For Solovay-Kitaev, we used a maximum sequence length of $l_0=6$ in the
+preprocessing step for $SU(4)$, an initial $\epsilon_0 = 1/64$ and a
+$c_{approx} = 4\sqrt(2)$, which provided a converging value for the number of
+recursion levels required to achieve a given error $\epsilon$. Generating
+sequences with longer length would require terabytes of storage and days
+of computing time.
+
+For Super-Kitaev, we ignore the precompiling step since for the $\Lambda(R_k)$
+gate it generates at most 8 $\Lambda(e^{i\phi})$ gates to compile. The
+primary overhead of Super-Kitaev is in generating the initial magic state
+$\ket{\psi_{n,1}}$ which is amortized over all $\Lambda(e^{i\phi})$
+gates, therefore a per-gate comparison of resource usage would only
+improve Super-Kitaev's standing relative to Solovay-Kitaev. We assume that we
+are only running a single circuit on our quantum computer, therefore some
+ancillae qubits are not uncomputed: the $n$ qubits used to store the
+initial $\ket{\psi_{n,1}}$ state and the $t$ qubits which are measured to
+do classical postprocessing are left in a non-$\ket{0}$ state. If we wish to
+run multiple-circuits using Super-Kitaev, we would at least double the
+size of our circuit to uncompute this part as well as adding the gates
+needed to perform
+the classical postprocessing on our quantum computer (since the state
+$\ket{\psi_{n,0}}$ is in superposition).

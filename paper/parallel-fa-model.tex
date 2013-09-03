@@ -1,0 +1,122 @@
+\section{Reversible Finite Automata and Quantum Inputs}
+
+We don't need to do much to a classical finite automata so that it will
+accept quantum input symbols other than making the transition function
+reversible. Everywhere below we will assume we have this reversibleness and
+use reversible gates like CNOT and Toffoli with the understanding that these
+would also work on classical inputs. Also, note that the transition functions
+for all the FA we care to compute so far are purely classical, in that the
+they can be represented as a table with purely zeros and ones. The only
+potential quantumness comes from the inputs to the FA.
+
+To compare resources
+between the classical and quantum cases, we will use the (reversible) circuit
+model and treat circuit depth as analogous to the running time on a fully
+parallelized machine.
+
+\subsection{Reversible Finite Automata for Decision Problems}
+
+The traditional definition of an FA is the following tuple.
+
+\begin{displaymath}
+(\Sigma,S,s_0,f,S')
+\end{displaymath}
+
+\begin{description}
+\item[$\Sigma$] is the alphabet of input symbols
+\item[$S$] is the set of states
+\item[$s_0$] is the start state
+\item[$f$] $: S \times \Sigma \rightarrow S$ is the
+transition function that determines the next state given the current state
+and current input symbol
+\item[$S'$] is the subset of final accept states.
+\end{description}
+
+We run the machine for $n$ steps (\emph{iterations}),
+starting in $s_0$ and feeding it one
+input symbol $a_i$ at a time from the set $\{a_1,\ldots,a_n\}$.
+If the resulting state $s_n$ is
+in $S'$, we accept, otherwise we reject.
+
+Normally, this takes us $O(n)$ gates executed in sequence, so $O(n)$ depth.
+This is because for step $i$, we need to know the input state $s_{i-1}$ in
+order to compute the next state $s_i$.
+
+However, since we know all $n$ input symbols $\{a_i\}$ at the beginning, it is
+possible to iterate in parallel to compute $s_i$'s simultaneously in a
+logarithmic-depth, binary-tree fashion. This is a simple idea which I'll spend
+the rest of these notes developing. We are trading some overhead to add
+this parallelism, but only a polynomial amount compared to the exponential
+speedup of $O(\log n)$ depth.
+
+\subsection{Reversible Finite Automata for Computing Binary Functions}
+
+I will modify the FA tuple above to be the following.
+
+\begin{displaymath}
+(\sigma,S,s_0,f,g)
+\end{displaymath}
+
+\begin{description}
+\item[$\sigma$] $= \{0,1\}^{k_i}$, the input alphabet restricted to symbols
+encoded in $k_i$ bits.
+\item[$S$] $= \{0,1\}^{k_s}$, the set of states restricted to the encodings of
+$k_s$ bits.
+\item[$s_0$] the initial state as before, $s_0 \in \{0,1\}^{k_s}$
+\item[$f$] $:S \times \Sigma \rightarrow S$ the transition function as before
+\item[$g$] $:S \times \Sigma \rightarrow \{0,1\}^{k_o}$ an optional output
+function that outputs a symbol encoded in $k_o$ bits.
+\end{description}
+
+Namely, I've restricted all symbols and states to be encodings in bits
+and added
+an optional output function $g$ so that at each step, we can produce an output symbol.
+Often however, the destination state of each iteration $s_i$
+will also be treated as our output for computing some function, in addition to
+being an input to the next iteration.
+We will drop the accept states, since in general we are interested in
+computing binary functions instead of just
+rejecting/accepting. However, none of these changes affects the computational
+power of finite automata.
+
+The transition function $f$ takes the form of a table  of
+$2^{k_i+k_s}$ lines, one for each combination of state and input symbol.
+
+Our goal is to compute $f$ on all $n$ inputs to produce all intermediate
+states $\{s_i\}$ as a ``trace'' or history of the FA execution,
+and optionally $g$ at each iteration to produce $n$ outputs.
+
+Now this FA can compute any pairs of functions $f$ and $g$ defined as:
+
+\begin{eqnarray}
+f & : &\{0,1\}^{k_i+k_s} \rightarrow \{0,1\}^{k_s} \\
+g & : & \{0,1\}^{k_i+k_s} \rightarrow \{0,1\}^{k_o}
+\end{eqnarray}
+
+The reason for this rather artificial separation of the function-to-be-computed
+into $f$ and $g$ is that some FA (namely Kitaev's parallelized adder) compute
+an output which is not used to determine the next state at all, and for
+bookkeeping purposes it is more convenient to treat such an output separately.
+
+\subsection{Classical Control}
+
+In the most general setting, we have a classical controller, a separate
+computer which generates gates to apply to our target finite automata,
+which may be running on a quantum computer on quantum inputs.
+
+If we know our classical inputs in advance, it may be possible to
+improve the resource counts below by precomputing gates on our classical
+controller, optimized to our particular FA. However, for general quantum
+inputs, we must generate a fixed, universal gate set to run our
+reversible FA. This is what we develop first in Section \ref{sec:pi}, which
+is generally overly expensive, and then we improve the cost in
+Sections \ref{sec:add} and \ref{sec:sharp} based on our knowledge
+of the specialized structure of adding and phase sharpening, respectively.
+
+This separation of a classical controller and a target machine is also
+useful because this is how we imagine most realistic quantum machines
+will run, and it will always be cheaper to precompute as many
+classical operations as possible on the classical controller. For
+example, in Subsection \ref{subsec:narrow} we encode our FA function
+tables exclusively when our classical controller determines which
+gates to use in narrowing the function tables by input bits.

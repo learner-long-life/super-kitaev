@@ -1,0 +1,99 @@
+\documentclass{article}
+
+\input{QCircuit}
+
+\title{Measurement Error in KSV Phase Estimation}
+
+\author{Paul Pham}
+
+\begin{document}
+
+\maketitle
+
+In this note, we provide a detailed calculation for the error in
+phase estimation due to Kitaev, Shen, and Vyalyi (KSV) where projective
+measurement is used instead of a coherent measurement. We show an
+increase from $2\sqrt{\epsilon}$ to $\sqrt{2}\sqrt[4]{\epsilon}$. The use
+of projective measurement is to offload many trigonometric operations
+onto a classical controller instead of doing them reversibly on a quantum
+computer. The cost of projective measurement is leaving garbage qubits in
+the ancillae of the target register, but this is a constant amount relative to
+the size of circuits we may wish to compile using the KSV procedure.
+Our goal is to show that this increase in error by a square root
+factor is negligible and may be preferrable in realistic implementations.
+
+To begin with, we review measurement operators as a generalization of
+controlled quantum operators, and then we further extend them to the case
+of approximately measuring functions on orthogonal basis decompositions
+where there are garbage bits left over in an ancillary register.
+Next, we calculate the error of this approximate measurement with garbage.
+Finally, we show how this general measurement procedure corresponds to
+estimating the phase of the modular multiplication operator used in
+Shor's factoring algorithm.
+
+\section{Measurement Operators}
+
+First we introduce some preliminary definitions related to measurement.
+
+A very common quantum operation entangles the results of one register
+(called the \emph{target}) based on the value of another register (called the
+\emph{control}). The most basic case of this is CNOT, or $\Lambda(X)$,
+operator, which operates
+on a control register of one qubit and a target register of one qubit.
+
+\begin{equation}
+\Lambda(X)\ket{y,z} \rightarrow \ket{y, z \oplus y}
+\end{equation}
+
+We have two ways of describing how CNOT is measuring in this case.
+We can say CNOT is \emph{measuring with respect to the decomposition} of
+the control registers, namely the computational basis, in that the
+operation on the target register (flipping the bit) depend on decomposing the
+control register in the basis $\{0,1\}$. We can also say that CNOT is
+\emph{measuring a function} $f:\{0,1\} \rightarrow \{0,1\}$ which in this
+case is simply the copy operator, $f(x) = x$. We can rewrite the equation
+above as:
+
+\begin{equation}
+\Lambda(X)\ket{y,z} \rightarrow \ket{y, z \oplus f(y)}
+\end{equation}
+
+However, we know that the distinction between control and target registers
+often depends on a particular basis. For example, we can flip the direction
+of control and target in the CNOT case by conjugating both qubits with
+Hadamard operators. The general characteristic of measurement operators
+is that they are entangling, and that they can encode information about
+one register in another in a very general way.
+From the point of view of measurement, we call the control register the
+\emph{object}, as in the state we are trying to measure, and the target register
+is the \emph{instrument}, as in the state that we transform according to
+projecting the measurement object in some orthogonal decomposition.
+
+Let's begin with a simple but more general case of a measuring operator
+$W$ which operates on a space decomposed into the subsystems $\mathcal{N}$
+(the measurement object) and $\mathcal{K}$ (the measurement instrument)
+according to the orthogonal decomposition
+$\mathcal{N} = \Bigoplus_j \mathcal{L}_j$, so-called because
+each of the $\mathcal{L}_j$ are pairwise orthogonal subspaces.
+$W$ will perform a different unitary
+operator $U_j$ on the subsystem $\mathcal{K}$
+depending on the projection of $\mathcal{N}$ into each $\mathcal{L}_j$.
+
+\begin{equation}
+W = \sum_{j \in \Omega} \Pi_{\mathcal{L}_j} \otimes R_j
+\end{equation}
+
+An interesting fact about this definition of measurement operators is
+that approximativeness is preserved. If each unitary $U_j$ is replaced with
+another unitary $\tilde{U}_j$ that approximates it with precision $\delta$,
+then the new measuring operator $\tilde{W}$ also approximates the original
+$W$ with the precision $\delta$.
+
+This precision is defined in terms of the inner product between any state operated
+on by $W$ and by $\tilde{W}$:
+
+\begin{equation}
+
+\end{equation}
+
+\end{document}

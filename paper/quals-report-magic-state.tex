@@ -1,0 +1,110 @@
+\subsection{Magic States}
+\label{subsec:magic-state}
+
+Suppose you had some magic state $\ket{\psi}$, given to you from some
+all-powerful being, parameterized by the
+integers $n$ and $k$ such that
+
+\begin{equation*}
+\ket{\psi_{n,k}} = \frac{1}{\sqrt{2^n}} \sum_{j=0}^{2^n-1}
+e^{-2\pi i j k / 2^n} \ket{j}
+\end{equation*}
+
+where $0 < k < 2^n$, $k$ is odd.
+
+Note that the magic states $\ket{\psi}$ look suspiciously like a
+QFT state of the computational basis.
+However that doesn't help us here, because QFT in general requires
+$O(n^2)$-depth and we need a logarithmic-depth compiler.
+This is intuitively why these states are hard to create.
+If we were able to construct them easily, we would also have a quicker way
+of implementing QFT.
+
+However, what we can do is create a superposition over all odd $k=(2s-1)$
+by starting in the state $\ket{0}^{\otimes n}$,
+applying a Hadamard to the most significant qubit to get an equal mix of $\ket{0}$
+and $\ket{1}$, then put a negative sign on the $\ket{1}$ component by applying
+$\sigma^z$ to the same qubit.
+
+\begin{equation*}
+\ket{\eta} = \normtwo \ket{0} - \normtwo \ket{2^{n-1}} =
+\frac{1}{\sqrt{2^{n-1}}} \sum_{s=1}^{2^{n-1}} \ket{\psi_{n,2s-1}}
+\end{equation*}
+
+More obviously relevant to our overall goal of approximating
+$\Lambda(e^{i\phi})$, we can enact a phase
+shift simply by doing addition, which is a result of these states
+being eigenvectors of the modular addition operator defined
+%by $A : \ket{j} \rightarrow \ket{(j+1) mod 2^n}$
+ 
+\begin{equation*}
+A\ket{\psi_{n,k}} = e^{2\pi i \phi_k} \ket{\psi_{n,k}}
+\end{equation*}
+
+\begin{equation*}
+A\ket{j} \rightarrow \ket{j+1 \mod 2^n}
+\end{equation*}
+
+where finding the eigenvalue $e^{2\pi i \phi_k}$ corresponds to finding
+the phase $\phi_k = k / 2^n$.
+
+Repeated application of $A$ (say $p$ times) would result in a phase
+added to the eigenstate equal to a multiple of $e^{2\pi i p / 2^n}$
+
+\begin{equation}
+A^p\ket{\psi_{n,k}} = e^{2\pi i \phi_k / 2^n} \ket{\psi_{n,k}}
+\end{equation}
+
+This explains why we don't find even $k$ interesting,
+since then we would not get a
+cyclic distribution of $2^n$ different phases,
+since only odd $k$
+are coprime with $2^n$. The exception is $k=0$, since this is the
+equal superposition of computational basis states, which we can also
+efficiently create. This will be a useful starting point later on to
+create magic states
+for odd $k$.
+
+\begin{displaymath}
+\ket{\psi_{n,0}} = H^{\otimes n}\ket{0^n}
+\end{displaymath}
+
+Suppose we have a certain state $\psi_{n,k}$ but we want to get enact
+a phase shift $e^{2\pi i l / 2^n}$. We can do this by solving $p=p(s,l)$
+in this equation:
+
+\begin{equation}
+\label{eqn:psl}
+(2s-1)p \equiv l (\mod 2^n)
+\end{equation}
+
+Stipulating $k$ to be odd guarantees that there is a unique solution $p$.
+
+We then applying $A^p$ as follows:
+
+\begin{equation}
+\label{eqn:upsilon}
+\Upsilon_n(A) \ket{p, \psi_{n,k}} \rightarrow
+e^{2\pi i l/2^n} \ket{p, \psi_{n,k}}
+\end{equation}
+
+But $p$ is in general hard to solve for, unless $k=1$, in which case
+$p = l$. Therefore, we will later see that $\ket{\psi_{n,1}}$ is a desirable
+state to have.
+
+Finally, to copy the state $\ket{\psi_{n,k}}$ it suffices to apply the following
+operator which only uses subtraction (addition with one addend and the
+outcome negated in two's complement representation).
+
+\begin{equation*}
+\ket{\psi_{n,k}}^{\otimes m} = W^{-1}\left( \ket{\psi_{n,0}}^\otimes(m-1) \otimes \ket{\psi_{n,k}} \right)
+\end{equation*}
+
+where $W$ is defined by
+
+\begin{multline}
+W : \ket{x_1,\ldots,x_{m-1},x_m} \rightarrow \\
+ \ket{x_1,\ldots,x_{m-1},x_1+\ldots+x_m}
+\end{multline}
+
+Armed with these properties, we're now ready to enact arbitrary phase shifts.
