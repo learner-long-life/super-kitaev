@@ -1,0 +1,9 @@
+// Test constructing the QFT gate from scratch
+
+// Start with QFT_3
+
+qureg A[3];
+
+dump;
+
+Mix(A[0])
